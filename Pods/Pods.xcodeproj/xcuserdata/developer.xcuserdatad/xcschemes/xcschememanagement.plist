@@ -9,6 +9,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Game.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>JWSwiftTools.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-FidgetSpinner.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -19,20 +29,40 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>iMessageTools.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>2E6442FA12D412BD556AEF7D5D7F0EB0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4A2630E5F5C678869D146C0790C259A3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>51D204855DFBF016223FCE3219FAEBFB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>544212980401A6DA7806F65EAD8C6637</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A806CFE0D66242ED0DEF414C43BF2D6A</key>
+		<key>87C7682E5A5CE083AF84A36542E45482</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C2760E57EB97F8D50D1EA550B0BC7DFD</key>
+		<key>D1C5268CB8FEA285B715D56E92B679E2</key>
 		<dict>
 			<key>primary</key>
 			<true/>

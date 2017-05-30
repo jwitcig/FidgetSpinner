@@ -11,9 +11,13 @@ import SpriteKit
 
 class SpinScene: SKScene {
 
+    var isDecelerating = false
+    
+    var isStopped = false
+    
     var spinner: SKNode!
     
-    var rotation: CGFloat = 0
+    var previousFrameRotation: CGFloat = 0
     
     var spinCount = 0 {
         didSet {
@@ -25,8 +29,15 @@ class SpinScene: SKScene {
         let label = SKLabelNode(text: "0")
         return label
     }()
+    
+    var game: SpinGame!
 
     override func didMove(to view: SKView) {
+        self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        
+        self.scaleMode = .resizeFill
+        self.size = view.frame.size
+        
         spinCountLabel.position = CGPoint(x: 0, y: view.frame.height/4)
         addChild(spinCountLabel)
         
@@ -50,6 +61,8 @@ class SpinScene: SKScene {
         
         let physics = SKPhysicsBody(circleOfRadius: 100)
         physics.pinned = true
+        physics.friction = 1.0
+        physics.angularDamping = 1.0
         
         spinner.physicsBody = physics
         return spinner
@@ -58,17 +71,43 @@ class SpinScene: SKScene {
     override func didEvaluateActions() {
         // just before calculating physics
         
-        rotation = spinner.zRotation + .pi
+        previousFrameRotation = spinner.zRotation + .pi
     }
     
     override func didSimulatePhysics() {
-        if rotation > spinner.zRotation + .pi {
+        let currentFrameRotation = spinner.zRotation + .pi
+        
+        if previousFrameRotation > currentFrameRotation {
             spinCount += 1
+        }
+        
+        if isDecelerating {
+            if spinner.physicsBody!.angularVelocity < 0.5 {
+                stopSpinner()
+            }
         }
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        spinner.physicsBody?.applyTorque(3)
+    func stopSpinner() {
+        guard !isStopped else { return }
+        
+        isStopped = true
+        
+        spinner.physicsBody?.allowsRotation = false
+        
+        game.finish()
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        spinner.physicsBody?.angularVelocity = 2
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isDecelerating = true
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isDecelerating = true
     }
     
 }

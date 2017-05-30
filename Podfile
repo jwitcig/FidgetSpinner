@@ -15,4 +15,8 @@ target 'MessagesExtension' do
 
   pod 'Cartography'
 
+  pod 'JWSwiftTools'
+  pod 'iMessageTools'
+  pod 'Game'
+  
 end
