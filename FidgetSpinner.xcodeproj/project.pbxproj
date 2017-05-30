@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		41B1C2A40C54A1CDAF784848 /* Pods_FidgetSpinner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAF486C974933CFCFD9AB4BA /* Pods_FidgetSpinner.framework */; };
+		8B2A6BF51EDCE90B009EB751 /* SpinScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2A6BF41EDCE90B009EB751 /* SpinScene.swift */; };
 		8BDFEB1A1EDCE19600E0244B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BDFEB191EDCE19600E0244B /* Assets.xcassets */; };
 		8BDFEB211EDCE19600E0244B /* MessagesExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8BDFEB201EDCE19600E0244B /* MessagesExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8BDFEB261EDCE19600E0244B /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BDFEB251EDCE19600E0244B /* Messages.framework */; };
-		8BDFEB291EDCE19600E0244B /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDFEB281EDCE19600E0244B /* MessagesViewController.swift */; };
+		8BDFEB291EDCE19600E0244B /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDFEB281EDCE19600E0244B /* SpinnerViewController.swift */; };
 		8BDFEB2C1EDCE19600E0244B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BDFEB2A1EDCE19600E0244B /* MainInterface.storyboard */; };
 		8BDFEB2E1EDCE19600E0244B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BDFEB2D1EDCE19600E0244B /* Assets.xcassets */; };
+		DD41F5CA233BBF9696E55D95 /* Pods_MessagesExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01ABA818622A0D07C9539C9B /* Pods_MessagesExtension.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,29 +43,56 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		01ABA818622A0D07C9539C9B /* Pods_MessagesExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MessagesExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CC90C7067C5DAF8B7F06C4B /* Pods-FidgetSpinner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FidgetSpinner.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FidgetSpinner/Pods-FidgetSpinner.debug.xcconfig"; sourceTree = "<group>"; };
+		5D2719E4BF9F36E39E72CA01 /* Pods-MessagesExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessagesExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MessagesExtension/Pods-MessagesExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		86F8D9257EA2FC0E3FC42C5A /* Pods-MessagesExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessagesExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-MessagesExtension/Pods-MessagesExtension.release.xcconfig"; sourceTree = "<group>"; };
+		8B2A6BF41EDCE90B009EB751 /* SpinScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinScene.swift; sourceTree = "<group>"; };
 		8BDFEB161EDCE19600E0244B /* FidgetSpinner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FidgetSpinner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BDFEB191EDCE19600E0244B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8BDFEB1B1EDCE19600E0244B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BDFEB201EDCE19600E0244B /* MessagesExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MessagesExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BDFEB251EDCE19600E0244B /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
-		8BDFEB281EDCE19600E0244B /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
+		8BDFEB281EDCE19600E0244B /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		8BDFEB2B1EDCE19600E0244B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		8BDFEB2D1EDCE19600E0244B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8BDFEB2F1EDCE19600E0244B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9E195B4B31C69B80D434AC1B /* Pods-FidgetSpinner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FidgetSpinner.release.xcconfig"; path = "Pods/Target Support Files/Pods-FidgetSpinner/Pods-FidgetSpinner.release.xcconfig"; sourceTree = "<group>"; };
+		CAF486C974933CFCFD9AB4BA /* Pods_FidgetSpinner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FidgetSpinner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		18436342B1207FCB6A7BFFF9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				41B1C2A40C54A1CDAF784848 /* Pods_FidgetSpinner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8BDFEB1D1EDCE19600E0244B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				8BDFEB261EDCE19600E0244B /* Messages.framework in Frameworks */,
+				DD41F5CA233BBF9696E55D95 /* Pods_MessagesExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1270258B9CDECD7A4EAB6D10 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0CC90C7067C5DAF8B7F06C4B /* Pods-FidgetSpinner.debug.xcconfig */,
+				9E195B4B31C69B80D434AC1B /* Pods-FidgetSpinner.release.xcconfig */,
+				5D2719E4BF9F36E39E72CA01 /* Pods-MessagesExtension.debug.xcconfig */,
+				86F8D9257EA2FC0E3FC42C5A /* Pods-MessagesExtension.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		8BDFEB0F1EDCE19600E0244B = {
 			isa = PBXGroup;
 			children = (
@@ -70,6 +100,7 @@
 				8BDFEB271EDCE19600E0244B /* MessagesExtension */,
 				8BDFEB241EDCE19600E0244B /* Frameworks */,
 				8BDFEB171EDCE19600E0244B /* Products */,
+				1270258B9CDECD7A4EAB6D10 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -95,6 +126,8 @@
 			isa = PBXGroup;
 			children = (
 				8BDFEB251EDCE19600E0244B /* Messages.framework */,
+				CAF486C974933CFCFD9AB4BA /* Pods_FidgetSpinner.framework */,
+				01ABA818622A0D07C9539C9B /* Pods_MessagesExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -102,7 +135,8 @@
 		8BDFEB271EDCE19600E0244B /* MessagesExtension */ = {
 			isa = PBXGroup;
 			children = (
-				8BDFEB281EDCE19600E0244B /* MessagesViewController.swift */,
+				8BDFEB281EDCE19600E0244B /* SpinnerViewController.swift */,
+				8B2A6BF41EDCE90B009EB751 /* SpinScene.swift */,
 				8BDFEB2A1EDCE19600E0244B /* MainInterface.storyboard */,
 				8BDFEB2D1EDCE19600E0244B /* Assets.xcassets */,
 				8BDFEB2F1EDCE19600E0244B /* Info.plist */,
@@ -117,8 +151,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8BDFEB361EDCE19600E0244B /* Build configuration list for PBXNativeTarget "FidgetSpinner" */;
 			buildPhases = (
+				3206C31420C70DA81AAEAD27 /* [CP] Check Pods Manifest.lock */,
 				8BDFEB141EDCE19600E0244B /* Resources */,
 				8BDFEB351EDCE19600E0244B /* Embed App Extensions */,
+				18436342B1207FCB6A7BFFF9 /* Frameworks */,
+				73D8259979184C73D6B29226 /* [CP] Embed Pods Frameworks */,
+				B7699082DD117824AFE5727B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -134,9 +172,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8BDFEB321EDCE19600E0244B /* Build configuration list for PBXNativeTarget "MessagesExtension" */;
 			buildPhases = (
+				0B6F9CAAE2BAEC0F32F0097D /* [CP] Check Pods Manifest.lock */,
 				8BDFEB1C1EDCE19600E0244B /* Sources */,
 				8BDFEB1D1EDCE19600E0244B /* Frameworks */,
 				8BDFEB1E1EDCE19600E0244B /* Resources */,
+				F80A9ECC6E7926C5F9E11312 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -160,11 +200,13 @@
 					8BDFEB151EDCE19600E0244B = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = 349WFX4WJR;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 					8BDFEB1F1EDCE19600E0244B = {
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = 349WFX4WJR;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -208,12 +250,91 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0B6F9CAAE2BAEC0F32F0097D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		3206C31420C70DA81AAEAD27 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		73D8259979184C73D6B29226 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FidgetSpinner/Pods-FidgetSpinner-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B7699082DD117824AFE5727B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FidgetSpinner/Pods-FidgetSpinner-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F80A9ECC6E7926C5F9E11312 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MessagesExtension/Pods-MessagesExtension-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8BDFEB1C1EDCE19600E0244B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8BDFEB291EDCE19600E0244B /* MessagesViewController.swift in Sources */,
+				8B2A6BF51EDCE90B009EB751 /* SpinScene.swift in Sources */,
+				8BDFEB291EDCE19600E0244B /* SpinnerViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,6 +457,7 @@
 		};
 		8BDFEB331EDCE19600E0244B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5D2719E4BF9F36E39E72CA01 /* Pods-MessagesExtension.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
 				DEVELOPMENT_TEAM = 349WFX4WJR;
@@ -350,6 +472,7 @@
 		};
 		8BDFEB341EDCE19600E0244B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 86F8D9257EA2FC0E3FC42C5A /* Pods-MessagesExtension.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
 				DEVELOPMENT_TEAM = 349WFX4WJR;
@@ -364,6 +487,7 @@
 		};
 		8BDFEB371EDCE19600E0244B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0CC90C7067C5DAF8B7F06C4B /* Pods-FidgetSpinner.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -377,6 +501,7 @@
 		};
 		8BDFEB381EDCE19600E0244B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E195B4B31C69B80D434AC1B /* Pods-FidgetSpinner.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -407,6 +532,7 @@
 				8BDFEB341EDCE19600E0244B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8BDFEB361EDCE19600E0244B /* Build configuration list for PBXNativeTarget "FidgetSpinner" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +541,7 @@
 				8BDFEB381EDCE19600E0244B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

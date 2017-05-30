@@ -1,0 +1,6 @@
+framework module Pods_FidgetSpinner {
+  umbrella header "Pods-FidgetSpinner-umbrella.h"
+
+  export *
+  module * { export * }
+}

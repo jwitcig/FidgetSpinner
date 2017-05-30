@@ -8,19 +8,63 @@
 
 import UIKit
 import Messages
+import SpriteKit
 
-class MessagesViewController: MSMessagesAppViewController {
+import Cartography
+
+class SpinnerViewController: MSMessagesAppViewController {
+    
+    var skView: SKView {
+        return view as! SKView
+    }
+    
+    var scene = SpinScene()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        skView.presentScene(scene)
+        
+        scene.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        
+        scene.scaleMode = .resizeFill
+        scene.size = skView.frame.size
+        
+        showColorPicker()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func showColorPicker() {
+        let drawer = UIView()
+        
+        let colors: [UIColor] = [.red, .white, .blue]
+        
+        let colorViews = colors.map {
+            ColorView(color: $0, onTouch: {
+                self.scene.backgroundColor = $0
+            })
+        }
+        
+        let stackView = UIStackView(arrangedSubviews: colorViews)
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
+        
+        view.addSubview(stackView)
+        
+        constrain(stackView, view) {
+            $0.center == $1.center
+
+            $0.width == $1.width
+        }
+        
+        constrain(colorViews) {
+            for i in $0 {
+                i.width == i.height
+                i.height == 44
+            }
+        }
     }
-    
+   
     // MARK: - Conversation Handling
     
     override func willBecomeActive(with conversation: MSConversation) {
@@ -69,4 +113,25 @@ class MessagesViewController: MSMessagesAppViewController {
         // Use this method to finalize any behaviors associated with the change in presentation style.
     }
 
+}
+
+class ColorView: UIView {
+    
+    var onTouch: (UIColor)->()
+    
+    init(color: UIColor, onTouch: @escaping (UIColor)->()) {
+        self.onTouch = onTouch
+        
+        super.init(frame: .zero)
+        
+        backgroundColor = color
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouch(backgroundColor!)
+    }
 }
