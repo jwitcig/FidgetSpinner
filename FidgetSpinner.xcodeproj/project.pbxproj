@@ -475,7 +475,7 @@
 				DEVELOPMENT_TEAM = 349WFX4WJR;
 				INFOPLIST_FILE = MessagesExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.jwitapps.FidgetSpinner.MessagesExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jwitapps.FidgetSpinnerDuals.MessagesExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
@@ -490,7 +490,7 @@
 				DEVELOPMENT_TEAM = 349WFX4WJR;
 				INFOPLIST_FILE = MessagesExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.jwitapps.FidgetSpinner.MessagesExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jwitapps.FidgetSpinnerDuals.MessagesExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
