@@ -14,6 +14,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>GoogleToolboxForMac.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>JWSwiftTools.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,17 +42,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>00103D6C821BE85971C563025527BA5D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>0BA0133A41DF45A5E56F2141CE557C3C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>2E6442FA12D412BD556AEF7D5D7F0EB0</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>4A2630E5F5C678869D146C0790C259A3</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>51D204855DFBF016223FCE3219FAEBFB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -63,6 +68,11 @@
 			<true/>
 		</dict>
 		<key>D1C5268CB8FEA285B715D56E92B679E2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E4B7640A19A16F478BC1F92C9C0E0421</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -28,6 +28,8 @@ class SpinnerViewController: UIViewController {
     var messageSender: MessageSender?
     var orientationManager: OrientationManager?
     
+    var designOptionsButtons: [UIView] = []
+    
     init(previousSession: SpinSession?, messageSender: MessageSender, orientationManager: OrientationManager) {
         self.messageSender = messageSender
         self.orientationManager = orientationManager
@@ -61,9 +63,30 @@ class SpinnerViewController: UIViewController {
     }
     
     func createColorPickers() {
-        let label = UILabel()
-        label.text = "hey"
-        let componentsStack = UIStackView(arrangedSubviews: [label])
+        
+        let bodyButton = PaintCodeView { rect in
+            ButtonsStyleKit.drawSpinnerPickerButton(frame: rect, resizing: .aspectFit)
+        }
+        
+        let bearingButton = PaintCodeView { rect in
+            ButtonsStyleKit.drawBearingPickerButton(frame: rect, resizing: .aspectFit)
+        }
+        
+        let capButton = PaintCodeView { rect in
+            ButtonsStyleKit.drawCapPickerButton(frame: rect, resizing: .aspectFit)
+        }
+        
+        designOptionsButtons = [bodyButton, bearingButton, capButton]
+        
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(SpinnerViewController.designButtonPressed(recognizer:)))
+        
+        for button in designOptionsButtons {
+            button.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(SpinnerViewController.designButtonPressed(recognizer:))))
+        }
+        
+        let componentsStack = UIStackView(arrangedSubviews: designOptionsButtons)
+        componentsStack.alignment = .fill
+        componentsStack.distribution = .fillEqually
         
         let frameColorPicker = ColorPicker(selected: .white) { selected in
             self.scene.backgroundColor = selected
@@ -104,15 +127,20 @@ class SpinnerViewController: UIViewController {
     }
     
     func finished() {
+        let exactTime = Date().timeIntervalSince(scene.spinStartTime!).cgFloat!
+        let time = Double(round(100*exactTime)/100).cgFloat!
+        
+        let spins = scene.spinCount
+        
         let initial = SpinSession.InitialData()
-        let instance = SpinSession.InstanceData(time: 10, spins: 10)
+        let instance = SpinSession.InstanceData(time: time, spins: spins)
         
         let selectedMessage = (messageSender as? MSMessagesAppViewController)?.activeConversation?.selectedMessage
         let session = SpinSession(instance: instance, initial: initial, ended: false, message: selectedMessage)
         
         let spinnerImage = UIImage(cgImage: skView.texture(from: scene.spinner)!.cgImage())
         
-        let layout = SpinMessageLayoutBuilder(spinnerImage: spinnerImage, time: 10, spins: scene.spinCount).generateLayout()
+        let layout = SpinMessageLayoutBuilder(spinnerImage: spinnerImage, time: time, spins: spins).generateLayout()
         
         let writer = SpinMessageWriter(data: session.dictionary, session: selectedMessage?.session)
 
@@ -121,6 +149,14 @@ class SpinnerViewController: UIViewController {
         messageSender?.send(message: newMessage,
                              layout: layout,
                   completionHandler: nil)
+    }
+    
+    func designButtonPressed(recognizer: UIGestureRecognizer) {
+        for button in designOptionsButtons {
+            button.backgroundColor = .clear
+        }
+        
+        recognizer.view?.backgroundColor = .white
     }
 }
 
@@ -213,3 +249,30 @@ class ColorPicker: UIStackView {
     }
     
 }
+
+class PaintCodeView: UIView {
+    var drawRect: ((CGRect) -> Void)?
+    
+    convenience init() {
+        self.init(frame: .zero)
+    }
+    
+    convenience init(drawRect: @escaping (CGRect)->Void) {
+        self.init(frame: .zero)
+        self.drawRect = drawRect
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .clear
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func draw(_ rect: CGRect) {
+        drawRect?(rect)
+    }
+}
+

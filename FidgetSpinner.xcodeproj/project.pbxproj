@@ -18,6 +18,9 @@
 		8BE714D61EDD08FA00E101CC /* iMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE714D51EDD08FA00E101CC /* iMessage.swift */; };
 		8BE714D81EDDD46800E101CC /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE714D71EDDD46800E101CC /* SpinnerViewController.swift */; };
 		8BE714DC1EDDFE9100E101CC /* ColorPickerStyleKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE714DB1EDDFE9100E101CC /* ColorPickerStyleKit.swift */; };
+		8BE714DE1EDE2EF800E101CC /* GoogleService-Info-Dev.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8BE714DD1EDE2EF800E101CC /* GoogleService-Info-Dev.plist */; };
+		8BE714E01EDE377F00E101CC /* ButtonsStyleKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE714DF1EDE377F00E101CC /* ButtonsStyleKit.swift */; };
+		8BE714E21EDE423B00E101CC /* BodyStyleStyleKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE714E11EDE423B00E101CC /* BodyStyleStyleKit.swift */; };
 		DD41F5CA233BBF9696E55D95 /* Pods_MessagesExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01ABA818622A0D07C9539C9B /* Pods_MessagesExtension.framework */; };
 /* End PBXBuildFile section */
 
@@ -63,6 +66,9 @@
 		8BE714D51EDD08FA00E101CC /* iMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = iMessage.swift; sourceTree = "<group>"; };
 		8BE714D71EDDD46800E101CC /* SpinnerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		8BE714DB1EDDFE9100E101CC /* ColorPickerStyleKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerStyleKit.swift; sourceTree = "<group>"; };
+		8BE714DD1EDE2EF800E101CC /* GoogleService-Info-Dev.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Dev.plist"; sourceTree = "<group>"; };
+		8BE714DF1EDE377F00E101CC /* ButtonsStyleKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonsStyleKit.swift; sourceTree = "<group>"; };
+		8BE714E11EDE423B00E101CC /* BodyStyleStyleKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BodyStyleStyleKit.swift; sourceTree = "<group>"; };
 		9E195B4B31C69B80D434AC1B /* Pods-FidgetSpinner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FidgetSpinner.release.xcconfig"; path = "Pods/Target Support Files/Pods-FidgetSpinner/Pods-FidgetSpinner.release.xcconfig"; sourceTree = "<group>"; };
 		CAF486C974933CFCFD9AB4BA /* Pods_FidgetSpinner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FidgetSpinner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -141,11 +147,14 @@
 		8BDFEB271EDCE19600E0244B /* MessagesExtension */ = {
 			isa = PBXGroup;
 			children = (
+				8BE714DD1EDE2EF800E101CC /* GoogleService-Info-Dev.plist */,
 				8BE714D51EDD08FA00E101CC /* iMessage.swift */,
 				8BDFEB281EDCE19600E0244B /* MessagesViewController.swift */,
 				8BE714D71EDDD46800E101CC /* SpinnerViewController.swift */,
 				8B2A6BF41EDCE90B009EB751 /* SpinScene.swift */,
 				8BDFEB2A1EDCE19600E0244B /* MainInterface.storyboard */,
+				8BE714E11EDE423B00E101CC /* BodyStyleStyleKit.swift */,
+				8BE714DF1EDE377F00E101CC /* ButtonsStyleKit.swift */,
 				8BE714DB1EDDFE9100E101CC /* ColorPickerStyleKit.swift */,
 				8BDFEB2D1EDCE19600E0244B /* Assets.xcassets */,
 				8BDFEB2F1EDCE19600E0244B /* Info.plist */,
@@ -253,6 +262,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BDFEB2E1EDCE19600E0244B /* Assets.xcassets in Resources */,
+				8BE714DE1EDE2EF800E101CC /* GoogleService-Info-Dev.plist in Resources */,
 				8BDFEB2C1EDCE19600E0244B /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -344,6 +354,8 @@
 			files = (
 				8BE714DC1EDDFE9100E101CC /* ColorPickerStyleKit.swift in Sources */,
 				8B2A6BF51EDCE90B009EB751 /* SpinScene.swift in Sources */,
+				8BE714E01EDE377F00E101CC /* ButtonsStyleKit.swift in Sources */,
+				8BE714E21EDE423B00E101CC /* BodyStyleStyleKit.swift in Sources */,
 				8BDFEB291EDCE19600E0244B /* MessagesViewController.swift in Sources */,
 				8BE714D81EDDD46800E101CC /* SpinnerViewController.swift in Sources */,
 				8BE714D61EDD08FA00E101CC /* iMessage.swift in Sources */,

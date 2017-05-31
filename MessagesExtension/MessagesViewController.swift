@@ -11,6 +11,7 @@ import Messages
 import SpriteKit
 
 import Cartography
+import Firebase
 
 import iMessageTools
 import JWSwiftTools
@@ -18,6 +19,13 @@ import JWSwiftTools
 class MessagesViewController: MSMessagesAppViewController {
     
     var gameController: SpinnerViewController?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let options = FIROptions(contentsOfFile:  Bundle(for: type(of: self) as AnyClass).path(forResource: "GoogleService-Info-Dev", ofType: "plist"))!
+        FIRApp.configure(with: options)
+    }
     
     // MARK: - Conversation Handling
     

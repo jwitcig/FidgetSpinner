@@ -18,5 +18,8 @@ target 'MessagesExtension' do
   pod 'JWSwiftTools'
   pod 'iMessageTools'
   pod 'Game'
-  
+
+  pod 'Firebase/Core'
+  pod 'Firebase/Database'
+
 end
