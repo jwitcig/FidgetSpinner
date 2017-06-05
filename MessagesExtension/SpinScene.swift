@@ -9,6 +9,13 @@
 import UIKit
 import SpriteKit
 
+import JWSwiftTools
+
+struct TimedLocation {
+    let location: CGPoint
+    let time: Date
+}
+
 class SpinScene: SKScene {
 
     var isDecelerating = false
@@ -27,6 +34,8 @@ class SpinScene: SKScene {
     
     var spinStartTime: Date?
     
+    var spinStart: TimedLocation?
+    
     lazy var spinTimeLabel: SKLabelNode = {
         let label = SKLabelNode(text: "0")
         return label
@@ -40,25 +49,49 @@ class SpinScene: SKScene {
     var game: SpinGame!
 
     override func didMove(to view: SKView) {
-        view.showsPhysics = true
-        
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
         self.scaleMode = .resizeFill
 //        self.size = view.frame.size
         
+        physicsWorld.gravity = .zero
+        
         spinCountLabel.position = CGPoint(x: 0, y: view.frame.height/4)
         addChild(spinCountLabel)
         
-        spinner = setupSpinner()
-        
-        addChild(spinner)
+        createSpinner(bodyColor: .blue, bearingColor: .red, capColor: .green, bodyStyle: 0, bearingStyle: 0, capStyle: 0)
     }
     
-    func setupSpinner() -> SKNode {
+    func createSpinner(bodyColor: UIColor, bearingColor: UIColor, capColor: UIColor, bodyStyle: Int, bearingStyle: Int, capStyle: Int) {
+        if let spinner = self.spinner {
+            if spinner.parent != nil {
+                spinner.removeFromParent()
+            }
+        }
         let spinner = SKNode()
+        
+        let size = CGSize(width: 350, height: 350)
+        let rect = CGRect(origin: .zero, size: size)
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        BodyStyles.draw(body: bodyStyle,
+                        rect: rect,
+                    resizing: .aspectFit,
+                   bodyColor: bodyColor)
+        
+        BearingStyles.draw(body: bearingStyle,
+                           rect: rect,
+                       resizing: .aspectFit,
+                      bodyColor: bearingColor)
 
-        let texture = SKTexture(image: BodyStyleStyleKit.imageOfBody1)
+        CapStyles.draw(body: capStyle,
+                       rect: rect,
+                   resizing: .aspectFit,
+                  bodyColor: capColor)
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+
+        let texture = SKTexture(image: image)
         let body = SKSpriteNode(texture: texture)
         
         body.position = CGPoint(x: 0, y: 35)
@@ -77,11 +110,13 @@ class SpinScene: SKScene {
         
         let physics = SKPhysicsBody(circleOfRadius: 100, center: CGPoint(x: 0, y: -35))
         physics.pinned = true
-        physics.friction = 1.0
-        physics.angularDamping = 1.0
+        physics.friction = 0.2
+        physics.angularDamping = 0.05
         
         spinner.physicsBody = physics
-        return spinner
+        
+        self.spinner = spinner
+        addChild(spinner)
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -97,23 +132,34 @@ class SpinScene: SKScene {
     }
     
     override func didSimulatePhysics() {
+        guard isDecelerating else { return }
+        
         let currentFrameRotation = spinner.zRotation + .pi
         
-        if previousFrameRotation > currentFrameRotation {
-            spinCount += 1
+        if spinner.physicsBody!.angularVelocity > 0 {
+            if previousFrameRotation > currentFrameRotation {
+                spinCount += 1
+            }
+        } else {
+            if previousFrameRotation < currentFrameRotation {
+                spinCount += 1
+            }
         }
         
         if isDecelerating {
-            if spinner.physicsBody!.angularVelocity < 0.5 {
+            if abs(spinner.physicsBody!.angularVelocity) < 0.5 {
                 stopSpinner()
             }
         }
     }
     
-    func startSpinner() {
-        spinner.physicsBody?.angularVelocity = 100
+    func startSpinner(velocity: CGFloat) {
+        spinner.constraints = []
+        spinner.physicsBody?.angularVelocity = velocity
         
         spinStartTime = Date()
+        
+        isDecelerating = true
     }
     
     func stopSpinner() {
@@ -126,16 +172,121 @@ class SpinScene: SKScene {
         game.finish()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+    }
+    
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        startSpinner()
+        for touch in touches {
+            guard !isDecelerating else { return }
+            
+            let location = touch.location(in: self)
+            
+            spinStart = TimedLocation(location: location, time: Date())
+            
+            let orient = SKConstraint.orient(to: location, in: self, offset: SKRange(constantValue: 0))
+            spinner.constraints = [orient]
+            
+            print(spinner.physicsBody?.angularVelocity)
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isDecelerating = true
+        
+        for touch in touches {
+            guard !isDecelerating else { return }
+            guard let start = spinStart else { return }
+            
+            let end = TimedLocation(location: touch.location(in: self), time: Date())
+            
+            let distance = end.location.distance(toPoint: start.location)
+            let time = end.time.timeIntervalSince(start.time)
+            
+            let direction = spinner.physicsBody!.angularVelocity > 0 ? 1 : -1
+            
+            let velocity = distance / CGFloat(time) * CGFloat(direction)
+            
+            startSpinner(velocity: velocity)
+        }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isDecelerating = true
+        
     }
     
+}
+
+struct BodyStyles {
+    static func draw(body: Int, rect: CGRect, resizing: BodyStyleStyleKit.ResizingBehavior, bodyColor: UIColor) {
+        switch body {
+        case 0:
+            BodyStyleStyleKit.drawBody(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 1:
+            BodyStyleStyleKit.drawBody1(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 2:
+            BodyStyleStyleKit.drawBody2(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 3:
+            BodyStyleStyleKit.drawBody3(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 4:
+            BodyStyleStyleKit.drawBody4(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 5:
+            BodyStyleStyleKit.drawBody5(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 6:
+            BodyStyleStyleKit.drawBody6(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 7:
+            BodyStyleStyleKit.drawBody7(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 8:
+            BodyStyleStyleKit.drawBody8(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 9:
+            BodyStyleStyleKit.drawBody9(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 10:
+            BodyStyleStyleKit.drawBody10(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 11:
+            BodyStyleStyleKit.drawBody11(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        case 12:
+            BodyStyleStyleKit.drawBody12(frame: rect, resizing: resizing, bodyColor: bodyColor)
+        default:
+            break
+        }
+    }
+}
+
+struct BearingStyles {
+    static func draw(body: Int, rect: CGRect, resizing: BearingStyleStyleKit.ResizingBehavior, bodyColor: UIColor) {
+        switch body {
+        case 0:
+            BearingStyleStyleKit.drawBearing1(frame: rect, resizing: resizing, bearingColorParam: bodyColor)
+        case 1:
+            BearingStyleStyleKit.drawBearing2(frame: rect, resizing: resizing, bearingColorParam: bodyColor)
+        case 2:
+            BearingStyleStyleKit.drawBearing3(frame: rect, resizing: resizing)
+        case 3:
+            BearingStyleStyleKit.drawBearing4(frame: rect, resizing: resizing, bearingColorParam: bodyColor)
+        case 4:
+            BearingStyleStyleKit.drawBearing5(frame: rect, resizing: resizing, bearingColorParam: bodyColor)
+        case 5:
+            BearingStyleStyleKit.drawBearing6(frame: rect, resizing: resizing)
+        default:
+            break
+        }
+    }
+}
+
+struct CapStyles {
+    static func draw(body: Int, rect: CGRect, resizing: CapStyleStyleKit.ResizingBehavior, bodyColor: UIColor) {
+        switch body {
+        case 0:
+            CapStyleStyleKit.drawCap1(frame: rect, resizing: resizing, capColor: bodyColor)
+        case 1:
+            CapStyleStyleKit.drawCap2(frame: rect, resizing: resizing, capColor: bodyColor)
+        case 2:
+            CapStyleStyleKit.drawCap3(frame: rect, resizing: resizing, capColor: bodyColor)
+        case 3:
+            CapStyleStyleKit.drawCap4(frame: rect, resizing: resizing, capColor: bodyColor)
+        case 4:
+            CapStyleStyleKit.drawCap5(frame: rect, resizing: resizing, capColor: bodyColor)
+        default:
+            break
+        }
+    }
 }

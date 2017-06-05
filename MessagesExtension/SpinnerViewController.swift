@@ -30,6 +30,32 @@ class SpinnerViewController: UIViewController {
     
     var designOptionsButtons: [UIView] = []
     
+    var bodyStylePicker: UIStackView!
+    var bearingStylePicker: UIStackView!
+    var capStylePicker: UIStackView!
+    
+    var colorPicker: ColorPicker!
+    
+    var editButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setTitle("edit", for: .normal)
+        button.addTarget(self, action: #selector(SpinnerViewController.toggleEditMode(sender:)), for: .touchUpInside)
+        return button
+    }()
+    
+    var editDrawer: UIView?
+    var editDrawerHiddenConstraint: ConstraintGroup?
+    var editDrawerVisibleConstraint: ConstraintGroup?
+    
+    var customizerSelection = 0
+    
+    var bodyColor: UIColor = .white
+    var bearingColor: UIColor = .white
+    var capColor: UIColor = .white
+    var bodyStyle = 0
+    var bearingStyle = 0
+    var capStyle = 0
+    
     init(previousSession: SpinSession?, messageSender: MessageSender, orientationManager: OrientationManager) {
         self.messageSender = messageSender
         self.orientationManager = orientationManager
@@ -51,6 +77,13 @@ class SpinnerViewController: UIViewController {
         super.viewDidLoad()
         
         createColorPickers()
+        
+        view.addSubview(editButton)
+        
+        constrain(editButton, view) {
+            $0.leading == $1.leading
+            $0.top == $1.top
+        }
     }
     
     private func configureScene(previousSession: SpinSession?) {
@@ -88,42 +121,198 @@ class SpinnerViewController: UIViewController {
         componentsStack.alignment = .fill
         componentsStack.distribution = .fillEqually
         
-        let frameColorPicker = ColorPicker(selected: .white) { selected in
-            self.scene.backgroundColor = selected
+        colorPicker = ColorPicker(selected: .white) { selected in
+            switch self.customizerSelection {
+            case 0:
+                self.bodyColor = selected
+            case 1:
+                self.bearingColor = selected
+            case 2:
+                self.capColor = selected
+            default: break
+            }
+            
+            self.scene.createSpinner(bodyColor: self.bodyColor,
+                                  bearingColor: self.bearingColor,
+                                      capColor: self.capColor,
+                                     bodyStyle: self.bodyStyle,
+                                  bearingStyle: self.bearingStyle,
+                                      capStyle: self.capStyle)
         }
         
-        let scrollView = UIScrollView()
+        let colorScrollView = UIScrollView()
 
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        colorScrollView.translatesAutoresizingMaskIntoConstraints = false
 
-        frameColorPicker.translatesAutoresizingMaskIntoConstraints = false
+        colorPicker.translatesAutoresizingMaskIntoConstraints = false
         
-        scrollView.addSubview(frameColorPicker)
+        colorScrollView.addSubview(colorPicker)
         
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.showsVerticalScrollIndicator = false
+        colorScrollView.showsHorizontalScrollIndicator = false
+        colorScrollView.showsVerticalScrollIndicator = false
         
-        constrain(frameColorPicker, scrollView) {
+        constrain(colorPicker, colorScrollView) {
             $0.leading == $1.leading
             $0.trailing == $1.trailing
             $0.top == $1.top
             $0.bottom == $1.bottom
         }
         
-        let colorPickersStack = UIStackView(arrangedSubviews: [componentsStack, scrollView])
-        colorPickersStack.axis = .vertical
-        colorPickersStack.alignment = .fill
-        colorPickersStack.distribution = .fillEqually
         
-        view.addSubview(colorPickersStack)
         
-        constrain(colorPickersStack, view) {
-            $0.centerX == $1.centerX
+        
+        
+        let bodyStylePicker = BodyStylePicker(selected: 0) { selected in
+            self.bodyStyle = selected
+            
+            self.scene.createSpinner(bodyColor: self.bodyColor,
+                                     bearingColor: self.bearingColor,
+                                     capColor: self.capColor,
+                                     bodyStyle: self.bodyStyle,
+                                     bearingStyle: self.bearingStyle,
+                                     capStyle: self.capStyle)
+        }
+        
+        let styleScrollView = UIScrollView()
+        
+        styleScrollView.translatesAutoresizingMaskIntoConstraints = false
+        bodyStylePicker.translatesAutoresizingMaskIntoConstraints = false
+        
+        styleScrollView.addSubview(bodyStylePicker)
+        
+        styleScrollView.showsHorizontalScrollIndicator = false
+        styleScrollView.showsVerticalScrollIndicator = false
+        
+        constrain(bodyStylePicker, styleScrollView) {
+            $0.leading == $1.leading
+            $0.trailing == $1.trailing
             $0.top == $1.top
+            $0.bottom == $1.bottom
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        let bearingStylePicker = BearingStylePicker(selected: 0) { selected in
+            self.bearingStyle = selected
+            
+            self.scene.createSpinner(bodyColor: self.bodyColor,
+                                     bearingColor: self.bearingColor,
+                                     capColor: self.capColor,
+                                     bodyStyle: self.bodyStyle,
+                                     bearingStyle: self.bearingStyle,
+                                     capStyle: self.capStyle)
+        }
+        
+        let bearingStyleScrollView = UIScrollView()
+        
+        bearingStyleScrollView.translatesAutoresizingMaskIntoConstraints = false
+        bearingStylePicker.translatesAutoresizingMaskIntoConstraints = false
+        
+        bearingStyleScrollView.addSubview(bearingStylePicker)
+        
+        bearingStyleScrollView.showsHorizontalScrollIndicator = false
+        bearingStyleScrollView.showsVerticalScrollIndicator = false
+        
+        constrain(bearingStylePicker, bearingStyleScrollView) {
+            $0.leading == $1.leading
+            $0.trailing == $1.trailing
+            $0.top == $1.top
+            $0.bottom == $1.bottom
+        }
+
+        
+        
+        
+        
+        
+        
+        
+        
+        let capStylePicker = BearingStylePicker(selected: 0) { selected in
+            self.bodyStyle = selected
+
+            self.scene.createSpinner(bodyColor: self.bodyColor,
+                                     bearingColor: self.bearingColor,
+                                     capColor: self.capColor,
+                                     bodyStyle: self.bodyStyle,
+                                     bearingStyle: self.bearingStyle,
+                                     capStyle: self.capStyle)
+        }
+        
+        let capStyleScrollView = UIScrollView()
+        
+        capStyleScrollView.translatesAutoresizingMaskIntoConstraints = false
+        capStylePicker.translatesAutoresizingMaskIntoConstraints = false
+        
+        capStyleScrollView.addSubview(capStylePicker)
+        
+        capStyleScrollView.showsHorizontalScrollIndicator = false
+        capStyleScrollView.showsVerticalScrollIndicator = false
+        
+        constrain(capStylePicker, capStyleScrollView) {
+            $0.leading == $1.leading
+            $0.trailing == $1.trailing
+            $0.top == $1.top
+            $0.bottom == $1.bottom
+        }
+        
+
+        
+        
+        
+        
+        
+        let customizerStack = UIStackView(arrangedSubviews: [componentsStack, styleScrollView, colorScrollView])
+        customizerStack.axis = .vertical
+        customizerStack.alignment = .fill
+        customizerStack.distribution = .fillEqually
+        
+        view.addSubview(customizerStack)
+        
+        constrain(customizerStack, view) {
+            $0.centerX == $1.centerX
             
             $0.width == $1.width
-            $0.height == 88
+            
+            $0.height == 44*3
         }
+        
+        editDrawerVisibleConstraint = constrain(customizerStack, view) {
+            $0.top == $1.top
+        }
+        editDrawerVisibleConstraint?.active = false
+        
+        editDrawerHiddenConstraint = constrain(customizerStack, view) {
+            $0.bottom == $1.top
+        }
+        
+        editDrawer = customizerStack
+    }
+    
+    func toggleEditMode(sender: Any) {
+        guard let hidden = editDrawerHiddenConstraint,
+              let visible = editDrawerVisibleConstraint else { return }
+        
+        if hidden.active {
+            hidden.active = false
+            visible.active = true
+
+            UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
+            
+        } else {
+            visible.active = false
+            hidden.active = true
+            
+            UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
+        }
+        
     }
     
     func finished() {
@@ -152,11 +341,24 @@ class SpinnerViewController: UIViewController {
     }
     
     func designButtonPressed(recognizer: UIGestureRecognizer) {
+        guard let button = recognizer.view else { return }
+        
         for button in designOptionsButtons {
             button.backgroundColor = .clear
         }
         
-        recognizer.view?.backgroundColor = .white
+        button.backgroundColor = .white
+        
+        switch designOptionsButtons.index(of: button)!  {
+        case 0:
+            break
+        case 1:
+            break
+        case 2:
+            break
+        default:
+            break
+        }
     }
 }
 
@@ -186,6 +388,84 @@ class ColorView: UIView {
         if keyPath == "bounds" {
             layer.cornerRadius = frame.size.height/2
         }
+    }
+}
+
+class BodyStyleView: UIView {
+    let style: Int
+    let onTouch: (Int)->()
+    
+    init(style: Int, onTouch: @escaping (Int)->()) {
+        self.style = style
+        self.onTouch = onTouch
+        
+        super.init(frame: .zero)
+        
+        backgroundColor = .clear
+    }
+    
+    override func draw(_ rect: CGRect) {
+        BodyStyles.draw(body: style, rect: rect, resizing: .aspectFit, bodyColor: .gray)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouch(style)
+    }
+}
+
+class BearingStyleView: UIView {
+    let style: Int
+    let onTouch: (Int)->()
+    
+    init(style: Int, onTouch: @escaping (Int)->()) {
+        self.style = style
+        self.onTouch = onTouch
+        
+        super.init(frame: .zero)
+        
+        backgroundColor = .clear
+    }
+    
+    override func draw(_ rect: CGRect) {
+        BearingStyles.draw(body: style, rect: rect, resizing: .aspectFit, bodyColor: .gray)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouch(style)
+    }
+}
+
+class CapStyleView: UIView {
+    let style: Int
+    let onTouch: (Int)->()
+    
+    init(style: Int, onTouch: @escaping (Int)->()) {
+        self.style = style
+        self.onTouch = onTouch
+        
+        super.init(frame: .zero)
+        
+        backgroundColor = .clear
+    }
+    
+    override func draw(_ rect: CGRect) {
+        CapStyles.draw(body: style, rect: rect, resizing: .aspectFit, bodyColor: .gray)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouch(style)
     }
 }
 
@@ -247,7 +527,120 @@ class ColorPicker: UIStackView {
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
+
+class BodyStylePicker: UIStackView {
+    var selected: Int
+    var onSelection: (Int)->()
     
+    static let stylesCount = 13
+    
+    init(selected: Int, onSelection: @escaping (Int)->()) {
+        self.selected = selected
+        self.onSelection = { _ in }
+        
+        super.init(frame: .zero)
+        
+        self.onSelection = {
+            self.selected = $0
+            onSelection($0)
+        }
+        
+        axis = .horizontal
+        alignment = .center
+        distribution = .equalSpacing
+        spacing = 10
+        
+        (0..<BodyStylePicker.stylesCount).forEach {
+            let colorView = BodyStyleView(style: $0, onTouch: onSelection)
+            addArrangedSubview(colorView)
+            
+            constrain(colorView) {
+                $0.width == $0.height
+                $0.height == 44
+            }
+        }
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class BearingStylePicker: UIStackView {
+    var selected: Int
+    var onSelection: (Int)->()
+    
+    static let stylesCount = 13
+    
+    init(selected: Int, onSelection: @escaping (Int)->()) {
+        self.selected = selected
+        self.onSelection = { _ in }
+        
+        super.init(frame: .zero)
+        
+        self.onSelection = {
+            self.selected = $0
+            onSelection($0)
+        }
+        
+        axis = .horizontal
+        alignment = .center
+        distribution = .equalSpacing
+        spacing = 10
+        
+        (0..<BodyStylePicker.stylesCount).forEach {
+            let colorView = BodyStyleView(style: $0, onTouch: onSelection)
+            addArrangedSubview(colorView)
+            
+            constrain(colorView) {
+                $0.width == $0.height
+                $0.height == 44
+            }
+        }
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class CapStylePicker: UIStackView {
+    var selected: Int
+    var onSelection: (Int)->()
+    
+    static let stylesCount = 13
+    
+    init(selected: Int, onSelection: @escaping (Int)->()) {
+        self.selected = selected
+        self.onSelection = { _ in }
+        
+        super.init(frame: .zero)
+        
+        self.onSelection = {
+            self.selected = $0
+            onSelection($0)
+        }
+        
+        axis = .horizontal
+        alignment = .center
+        distribution = .equalSpacing
+        spacing = 10
+        
+        (0..<BodyStylePicker.stylesCount).forEach {
+            let colorView = BodyStyleView(style: $0, onTouch: onSelection)
+            addArrangedSubview(colorView)
+            
+            constrain(colorView) {
+                $0.width == $0.height
+                $0.height == 44
+            }
+        }
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }
 
 class PaintCodeView: UIView {
