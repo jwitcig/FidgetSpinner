@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		41B1C2A40C54A1CDAF784848 /* Pods_FidgetSpinner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAF486C974933CFCFD9AB4BA /* Pods_FidgetSpinner.framework */; };
+		8B0AA2C11EE626F30022E499 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0AA2C01EE626F30022E499 /* Parser.swift */; };
 		8B2A6BF51EDCE90B009EB751 /* SpinScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2A6BF41EDCE90B009EB751 /* SpinScene.swift */; };
 		8BDFEB1A1EDCE19600E0244B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BDFEB191EDCE19600E0244B /* Assets.xcassets */; };
 		8BDFEB211EDCE19600E0244B /* MessagesExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8BDFEB201EDCE19600E0244B /* MessagesExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -56,6 +57,7 @@
 		0CC90C7067C5DAF8B7F06C4B /* Pods-FidgetSpinner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FidgetSpinner.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FidgetSpinner/Pods-FidgetSpinner.debug.xcconfig"; sourceTree = "<group>"; };
 		5D2719E4BF9F36E39E72CA01 /* Pods-MessagesExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessagesExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MessagesExtension/Pods-MessagesExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		86F8D9257EA2FC0E3FC42C5A /* Pods-MessagesExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MessagesExtension.release.xcconfig"; path = "Pods/Target Support Files/Pods-MessagesExtension/Pods-MessagesExtension.release.xcconfig"; sourceTree = "<group>"; };
+		8B0AA2C01EE626F30022E499 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		8B2A6BF41EDCE90B009EB751 /* SpinScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinScene.swift; sourceTree = "<group>"; };
 		8BDFEB161EDCE19600E0244B /* FidgetSpinner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FidgetSpinner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BDFEB191EDCE19600E0244B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 				8BDFEB281EDCE19600E0244B /* MessagesViewController.swift */,
 				8BE714D71EDDD46800E101CC /* SpinnerViewController.swift */,
 				8B2A6BF41EDCE90B009EB751 /* SpinScene.swift */,
+				8B0AA2C01EE626F30022E499 /* Parser.swift */,
 				8BDFEB2A1EDCE19600E0244B /* MainInterface.storyboard */,
 				8BE714E11EDE423B00E101CC /* BodyStyleStyleKit.swift */,
 				8BE714DF1EDE377F00E101CC /* ButtonsStyleKit.swift */,
@@ -362,6 +365,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8BE714DC1EDDFE9100E101CC /* ColorPickerStyleKit.swift in Sources */,
+				8B0AA2C11EE626F30022E499 /* Parser.swift in Sources */,
 				8BE714E81EDF8FCB00E101CC /* BearingStyleStyleKit.swift in Sources */,
 				8B2A6BF51EDCE90B009EB751 /* SpinScene.swift in Sources */,
 				8BE714E01EDE377F00E101CC /* ButtonsStyleKit.swift in Sources */,

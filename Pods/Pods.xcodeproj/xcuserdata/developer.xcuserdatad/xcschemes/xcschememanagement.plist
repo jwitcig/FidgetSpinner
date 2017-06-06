@@ -24,12 +24,22 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>PocketSVG.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-FidgetSpinner.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>Pods-MessagesExtension.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SWXMLHash.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -47,11 +57,6 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>0BA0133A41DF45A5E56F2141CE557C3C</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>2E6442FA12D412BD556AEF7D5D7F0EB0</key>
 		<dict>
 			<key>primary</key>
@@ -62,7 +67,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>64EA74303D036BF84ED2F021E85397E1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>76653B3C66AF2EDC253711E5F0E1B34F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>87C7682E5A5CE083AF84A36542E45482</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C0014A363B4056A0E6613B4E6A9541AD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -72,7 +92,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E4B7640A19A16F478BC1F92C9C0E0421</key>
+		<key>D98986199D4F04C546E0E25C7DC731EF</key>
 		<dict>
 			<key>primary</key>
 			<true/>

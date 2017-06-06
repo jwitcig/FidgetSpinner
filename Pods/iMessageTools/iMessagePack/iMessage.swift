@@ -31,6 +31,7 @@ public protocol OrientationManager {
     func requestPresentationStyle(_: MSMessagesAppPresentationStyle)
 }
 
+@available(iOSApplicationExtension 10.0, *)
 extension MSMessagesAppViewController: OrientationManager { }
 
 @available(iOS 10.0, *)

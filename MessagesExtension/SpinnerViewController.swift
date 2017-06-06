@@ -30,10 +30,6 @@ class SpinnerViewController: UIViewController {
     
     var designOptionsButtons: [UIView] = []
     
-    var bodyStylePicker: UIStackView!
-    var bearingStylePicker: UIStackView!
-    var capStylePicker: UIStackView!
-    
     var colorPicker: ColorPicker!
     
     var editButton: UIButton = {
@@ -55,6 +51,14 @@ class SpinnerViewController: UIViewController {
     var bodyStyle = 0
     var bearingStyle = 0
     var capStyle = 0
+    
+    var bodyStylePicker: BodyStylePicker!
+    var bearingStylePicker: BearingStylePicker!
+    var capStylePicker: CapStylePicker!
+    
+    var bodyStylePickerConstraints: ConstraintGroup!
+    var bearingStylePickerConstraints: ConstraintGroup!
+    var capStylePickerConstraints: ConstraintGroup!
     
     init(previousSession: SpinSession?, messageSender: MessageSender, orientationManager: OrientationManager) {
         self.messageSender = messageSender
@@ -162,7 +166,7 @@ class SpinnerViewController: UIViewController {
         
         
         
-        let bodyStylePicker = BodyStylePicker(selected: 0) { selected in
+        bodyStylePicker = BodyStylePicker(selected: 0) { selected in
             self.bodyStyle = selected
             
             self.scene.createSpinner(bodyColor: self.bodyColor,
@@ -183,7 +187,7 @@ class SpinnerViewController: UIViewController {
         styleScrollView.showsHorizontalScrollIndicator = false
         styleScrollView.showsVerticalScrollIndicator = false
         
-        constrain(bodyStylePicker, styleScrollView) {
+        bodyStylePickerConstraints = constrain(bodyStylePicker, styleScrollView) {
             $0.leading == $1.leading
             $0.trailing == $1.trailing
             $0.top == $1.top
@@ -199,7 +203,7 @@ class SpinnerViewController: UIViewController {
         
         
         
-        let bearingStylePicker = BearingStylePicker(selected: 0) { selected in
+        bearingStylePicker = BearingStylePicker(selected: 0) { selected in
             self.bearingStyle = selected
             
             self.scene.createSpinner(bodyColor: self.bodyColor,
@@ -210,17 +214,17 @@ class SpinnerViewController: UIViewController {
                                      capStyle: self.capStyle)
         }
         
-        let bearingStyleScrollView = UIScrollView()
+//        let bearingStyleScrollView = UIScrollView()
         
-        bearingStyleScrollView.translatesAutoresizingMaskIntoConstraints = false
+        styleScrollView.translatesAutoresizingMaskIntoConstraints = false
         bearingStylePicker.translatesAutoresizingMaskIntoConstraints = false
         
-        bearingStyleScrollView.addSubview(bearingStylePicker)
+        styleScrollView.addSubview(bearingStylePicker)
         
-        bearingStyleScrollView.showsHorizontalScrollIndicator = false
-        bearingStyleScrollView.showsVerticalScrollIndicator = false
+        styleScrollView.showsHorizontalScrollIndicator = false
+        styleScrollView.showsVerticalScrollIndicator = false
         
-        constrain(bearingStylePicker, bearingStyleScrollView) {
+        bearingStylePickerConstraints = constrain(bearingStylePicker, styleScrollView) {
             $0.leading == $1.leading
             $0.trailing == $1.trailing
             $0.top == $1.top
@@ -235,8 +239,8 @@ class SpinnerViewController: UIViewController {
         
         
         
-        let capStylePicker = BearingStylePicker(selected: 0) { selected in
-            self.bodyStyle = selected
+        capStylePicker = CapStylePicker(selected: 0) { selected in
+            self.capStyle = selected
 
             self.scene.createSpinner(bodyColor: self.bodyColor,
                                      bearingColor: self.bearingColor,
@@ -246,17 +250,17 @@ class SpinnerViewController: UIViewController {
                                      capStyle: self.capStyle)
         }
         
-        let capStyleScrollView = UIScrollView()
+//        let capStyleScrollView = UIScrollView()
         
-        capStyleScrollView.translatesAutoresizingMaskIntoConstraints = false
+        styleScrollView.translatesAutoresizingMaskIntoConstraints = false
         capStylePicker.translatesAutoresizingMaskIntoConstraints = false
         
-        capStyleScrollView.addSubview(capStylePicker)
+        styleScrollView.addSubview(capStylePicker)
         
-        capStyleScrollView.showsHorizontalScrollIndicator = false
-        capStyleScrollView.showsVerticalScrollIndicator = false
+        styleScrollView.showsHorizontalScrollIndicator = false
+        styleScrollView.showsVerticalScrollIndicator = false
         
-        constrain(capStylePicker, capStyleScrollView) {
+        capStylePickerConstraints = constrain(capStylePicker, styleScrollView) {
             $0.leading == $1.leading
             $0.trailing == $1.trailing
             $0.top == $1.top
@@ -281,7 +285,7 @@ class SpinnerViewController: UIViewController {
             
             $0.width == $1.width
             
-            $0.height == 44*3
+            $0.height == 50 * 3
         }
         
         editDrawerVisibleConstraint = constrain(customizerStack, view) {
@@ -348,14 +352,34 @@ class SpinnerViewController: UIViewController {
         }
         
         button.backgroundColor = .white
-        
-        switch designOptionsButtons.index(of: button)!  {
+       
+        let buttonIndex = designOptionsButtons.index(of: button)!
+        self.customizerSelection = buttonIndex
+        switch buttonIndex  {
         case 0:
-            break
+            bodyStylePicker.isHidden = false
+            bearingStylePicker.isHidden = true
+            capStylePicker.isHidden = true
+            
+            bearingStylePickerConstraints.active = false
+            capStylePickerConstraints.active = false
+            bodyStylePickerConstraints.active = true
         case 1:
-            break
+            bodyStylePicker.isHidden = true
+            bearingStylePicker.isHidden = false
+            capStylePicker.isHidden = true
+
+            bodyStylePickerConstraints.active = true
+            capStylePickerConstraints.active = false
+            bearingStylePickerConstraints.active = true
         case 2:
-            break
+            bodyStylePicker.isHidden = true
+            bearingStylePicker.isHidden = true
+            capStylePicker.isHidden = false
+            
+            bearingStylePickerConstraints.active = false
+            bodyStylePickerConstraints.active = false
+            capStylePickerConstraints.active = true
         default:
             break
         }
@@ -395,6 +419,13 @@ class BodyStyleView: UIView {
     let style: Int
     let onTouch: (Int)->()
     
+    lazy var bearingImage: UIImage = {
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: 36, height: 36), false, 0)
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
+    }()
+    
     init(style: Int, onTouch: @escaping (Int)->()) {
         self.style = style
         self.onTouch = onTouch
@@ -405,7 +436,7 @@ class BodyStyleView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        BodyStyles.draw(body: style, rect: rect, resizing: .aspectFit, bodyColor: .gray)
+        BodyStyles.draw(body: style, rect: rect, resizing: .aspectFit, bodyColor: .gray, image: bearingImage)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -519,7 +550,7 @@ class ColorPicker: UIStackView {
             
             constrain(colorView) {
                 $0.width == $0.height
-                $0.height == 44
+                $0.height == 50
             }
         }
     }
@@ -557,7 +588,7 @@ class BodyStylePicker: UIStackView {
             
             constrain(colorView) {
                 $0.width == $0.height
-                $0.height == 44
+                $0.height == 50
             }
         }
     }
@@ -589,13 +620,13 @@ class BearingStylePicker: UIStackView {
         distribution = .equalSpacing
         spacing = 10
         
-        (0..<BodyStylePicker.stylesCount).forEach {
-            let colorView = BodyStyleView(style: $0, onTouch: onSelection)
+        (0..<BearingStylePicker.stylesCount).forEach {
+            let colorView = BearingStyleView(style: $0, onTouch: onSelection)
             addArrangedSubview(colorView)
             
             constrain(colorView) {
                 $0.width == $0.height
-                $0.height == 44
+                $0.height == 50
             }
         }
     }
@@ -609,7 +640,7 @@ class CapStylePicker: UIStackView {
     var selected: Int
     var onSelection: (Int)->()
     
-    static let stylesCount = 13
+    static let stylesCount = 5
     
     init(selected: Int, onSelection: @escaping (Int)->()) {
         self.selected = selected
@@ -627,13 +658,13 @@ class CapStylePicker: UIStackView {
         distribution = .equalSpacing
         spacing = 10
         
-        (0..<BodyStylePicker.stylesCount).forEach {
-            let colorView = BodyStyleView(style: $0, onTouch: onSelection)
+        (0..<CapStylePicker.stylesCount).forEach {
+            let colorView = CapStyleView(style: $0, onTouch: onSelection)
             addArrangedSubview(colorView)
             
             constrain(colorView) {
                 $0.width == $0.height
-                $0.height == 44
+                $0.height == 50
             }
         }
     }

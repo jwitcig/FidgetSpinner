@@ -59,7 +59,7 @@ class SpinScene: SKScene {
         spinCountLabel.position = CGPoint(x: 0, y: view.frame.height/4)
         addChild(spinCountLabel)
         
-        createSpinner(bodyColor: .blue, bearingColor: .red, capColor: .green, bodyStyle: 0, bearingStyle: 0, capStyle: 0)
+        createSpinner(bodyColor: .blue, bearingColor: .clear, capColor: .clear, bodyStyle: 0, bearingStyle: 0, capStyle: 0)
     }
     
     func createSpinner(bodyColor: UIColor, bearingColor: UIColor, capColor: UIColor, bodyStyle: Int, bearingStyle: Int, capStyle: Int) {
@@ -68,45 +68,46 @@ class SpinScene: SKScene {
                 spinner.removeFromParent()
             }
         }
-        let spinner = SKNode()
         
-        let size = CGSize(width: 350, height: 350)
-        let rect = CGRect(origin: .zero, size: size)
         
-        UIGraphicsBeginImageContextWithOptions(size, false, 0)
-        BodyStyles.draw(body: bodyStyle,
-                        rect: rect,
-                    resizing: .aspectFit,
-                   bodyColor: bodyColor)
-        
+        let imageSize = CGSize(width: 104, height: 104)
+        var image: UIImage?
+        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
         BearingStyles.draw(body: bearingStyle,
-                           rect: rect,
+                           rect: CGRect(origin: .zero, size: imageSize),
                        resizing: .aspectFit,
                       bodyColor: bearingColor)
 
-        CapStyles.draw(body: capStyle,
-                       rect: rect,
-                   resizing: .aspectFit,
-                  bodyColor: capColor)
-        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 
-        let texture = SKTexture(image: image)
-        let body = SKSpriteNode(texture: texture)
         
-        body.position = CGPoint(x: 0, y: 35)
+        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
+        CapStyles.draw(body: capStyle,
+                       rect: CGRect(origin: .zero, size: imageSize),
+                   resizing: .aspectFit,
+                  bodyColor: capColor)
+    
+        image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
 
-        spinner.addChild(body)
+        
+        let spinnerSize = CGSize(width: 360, height: 328)
+        
+        UIGraphicsBeginImageContextWithOptions(spinnerSize, false, 0)
+        BodyStyles.draw(body: bodyStyle,
+                        rect: CGRect(origin: .zero, size: spinnerSize),
+                    resizing: .aspectFit,
+                   bodyColor: bodyColor,
+                       image: image ?? UIImage())
+        
+        let spinnerImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
 
-        for i in 0..<3 {
-//            let texture = SKTexture(imageNamed: "blade")
-//            let blade = SKSpriteNode(texture: texture, size: CGSize(width: 100, height: 40))
-//            
-//            blade.anchorPoint = CGPoint(x: 0, y: 0.5)
-//            blade.zRotation = CGFloat(2/3.0 * .pi * Double(i))
-//            
-//            spinner.addChild(blade)
-        }
+        let texture = SKTexture(image: spinnerImage)
+        let spinner = SKSpriteNode(texture: texture)
+        
+        spinner.position = CGPoint(x: 0, y: 35)
         
         let physics = SKPhysicsBody(circleOfRadius: 100, center: CGPoint(x: 0, y: -35))
         physics.pinned = true
@@ -217,34 +218,34 @@ class SpinScene: SKScene {
 }
 
 struct BodyStyles {
-    static func draw(body: Int, rect: CGRect, resizing: BodyStyleStyleKit.ResizingBehavior, bodyColor: UIColor) {
+    static func draw(body: Int, rect: CGRect, resizing: BodyStyleStyleKit.ResizingBehavior, bodyColor: UIColor, image: UIImage) {
         switch body {
         case 0:
-            BodyStyleStyleKit.drawBody(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 1:
-            BodyStyleStyleKit.drawBody1(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody1(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 2:
-            BodyStyleStyleKit.drawBody2(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody2(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 3:
-            BodyStyleStyleKit.drawBody3(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody3(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 4:
-            BodyStyleStyleKit.drawBody4(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody4(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 5:
-            BodyStyleStyleKit.drawBody5(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody5(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 6:
-            BodyStyleStyleKit.drawBody6(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody6(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 7:
-            BodyStyleStyleKit.drawBody7(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody7(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 8:
-            BodyStyleStyleKit.drawBody8(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody8(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 9:
-            BodyStyleStyleKit.drawBody9(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody9(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 10:
-            BodyStyleStyleKit.drawBody10(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody10(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 11:
-            BodyStyleStyleKit.drawBody11(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody11(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         case 12:
-            BodyStyleStyleKit.drawBody12(frame: rect, resizing: resizing, bodyColor: bodyColor)
+            BodyStyleStyleKit.drawBody12(frame: rect, resizing: resizing, bodyColor: bodyColor, bearing: image)
         default:
             break
         }

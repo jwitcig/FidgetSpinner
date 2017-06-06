@@ -14,6 +14,8 @@ target 'MessagesExtension' do
   use_frameworks!
 
   pod 'Cartography'
+  pod 'PocketSVG'
+  pod 'SWXMLHash'
 
   pod 'JWSwiftTools'
   pod 'iMessageTools'
