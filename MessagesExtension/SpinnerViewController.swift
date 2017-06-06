@@ -298,6 +298,8 @@ class SpinnerViewController: UIViewController {
         }
         
         editDrawer = customizerStack
+        
+        selectDesignButton(bodyButton)
     }
     
     func toggleEditMode(sender: Any) {
@@ -316,7 +318,6 @@ class SpinnerViewController: UIViewController {
             
             UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
         }
-        
     }
     
     func finished() {
@@ -346,13 +347,16 @@ class SpinnerViewController: UIViewController {
     
     func designButtonPressed(recognizer: UIGestureRecognizer) {
         guard let button = recognizer.view else { return }
-        
+        selectDesignButton(button)
+    }
+    
+    func selectDesignButton(_ button: UIView) {
         for button in designOptionsButtons {
             button.backgroundColor = .clear
         }
         
         button.backgroundColor = .white
-       
+        
         let buttonIndex = designOptionsButtons.index(of: button)!
         self.customizerSelection = buttonIndex
         switch buttonIndex  {
@@ -368,7 +372,7 @@ class SpinnerViewController: UIViewController {
             bodyStylePicker.isHidden = true
             bearingStylePicker.isHidden = false
             capStylePicker.isHidden = true
-
+            
             bodyStylePickerConstraints.active = true
             capStylePickerConstraints.active = false
             bearingStylePickerConstraints.active = true
