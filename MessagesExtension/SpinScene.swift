@@ -105,18 +105,22 @@ class SpinScene: SKScene {
         UIGraphicsEndImageContext()
 
         let texture = SKTexture(image: spinnerImage)
-        let spinner = SKSpriteNode(texture: texture)
+        let body = SKSpriteNode(texture: texture)
         
-        spinner.position = CGPoint(x: 0, y: 35)
+        body.position = CGPoint(x: 0, y: 35)
         
         let physics = SKPhysicsBody(circleOfRadius: 100, center: CGPoint(x: 0, y: -35))
         physics.pinned = true
-        physics.friction = 0.2
-        physics.angularDamping = 0.05
+//        physics.friction = 0.2
+//        physics.angularDamping = 0.05
         
-        spinner.physicsBody = physics
+        physics.friction = 1.0
+        physics.angularDamping = 1.0
+
         
-        self.spinner = spinner
+        body.physicsBody = physics
+        
+        self.spinner = body
         addChild(spinner)
     }
     

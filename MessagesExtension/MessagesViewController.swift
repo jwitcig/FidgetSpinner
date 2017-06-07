@@ -25,6 +25,10 @@ class MessagesViewController: MSMessagesAppViewController {
         
         let options = FIROptions(contentsOfFile:  Bundle(for: type(of: self) as AnyClass).path(forResource: "GoogleService-Info-Dev", ofType: "plist"))!
         FIRApp.configure(with: options)
+        
+        let database = FIRDatabase.database()
+        database.persistenceEnabled = true
+        database.goOffline()
     }
     
     // MARK: - Conversation Handling

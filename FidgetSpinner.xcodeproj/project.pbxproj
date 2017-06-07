@@ -16,6 +16,9 @@
 		8BDFEB291EDCE19600E0244B /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDFEB281EDCE19600E0244B /* MessagesViewController.swift */; };
 		8BDFEB2C1EDCE19600E0244B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8BDFEB2A1EDCE19600E0244B /* MainInterface.storyboard */; };
 		8BDFEB2E1EDCE19600E0244B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8BDFEB2D1EDCE19600E0244B /* Assets.xcassets */; };
+		8BE17D1C1EE75997000C0C19 /* MySpinnersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE17D1B1EE75997000C0C19 /* MySpinnersViewController.swift */; };
+		8BE17D1E1EE7972D000C0C19 /* UserInterfaceStyleKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE17D1D1EE7972D000C0C19 /* UserInterfaceStyleKit.swift */; };
+		8BE17D201EE7987F000C0C19 /* Bebas.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8BE17D1F1EE7987F000C0C19 /* Bebas.ttf */; };
 		8BE714D61EDD08FA00E101CC /* iMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE714D51EDD08FA00E101CC /* iMessage.swift */; };
 		8BE714D81EDDD46800E101CC /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE714D71EDDD46800E101CC /* SpinnerViewController.swift */; };
 		8BE714DC1EDDFE9100E101CC /* ColorPickerStyleKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE714DB1EDDFE9100E101CC /* ColorPickerStyleKit.swift */; };
@@ -68,6 +71,9 @@
 		8BDFEB2B1EDCE19600E0244B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		8BDFEB2D1EDCE19600E0244B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8BDFEB2F1EDCE19600E0244B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8BE17D1B1EE75997000C0C19 /* MySpinnersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MySpinnersViewController.swift; sourceTree = "<group>"; };
+		8BE17D1D1EE7972D000C0C19 /* UserInterfaceStyleKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInterfaceStyleKit.swift; sourceTree = "<group>"; };
+		8BE17D1F1EE7987F000C0C19 /* Bebas.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bebas.ttf; sourceTree = "<group>"; };
 		8BE714D51EDD08FA00E101CC /* iMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = iMessage.swift; sourceTree = "<group>"; };
 		8BE714D71EDDD46800E101CC /* SpinnerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		8BE714DB1EDDFE9100E101CC /* ColorPickerStyleKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPickerStyleKit.swift; sourceTree = "<group>"; };
@@ -158,6 +164,7 @@
 				8BE714DD1EDE2EF800E101CC /* GoogleService-Info-Dev.plist */,
 				8BE714D51EDD08FA00E101CC /* iMessage.swift */,
 				8BDFEB281EDCE19600E0244B /* MessagesViewController.swift */,
+				8BE17D1B1EE75997000C0C19 /* MySpinnersViewController.swift */,
 				8BE714D71EDDD46800E101CC /* SpinnerViewController.swift */,
 				8B2A6BF41EDCE90B009EB751 /* SpinScene.swift */,
 				8B0AA2C01EE626F30022E499 /* Parser.swift */,
@@ -167,7 +174,9 @@
 				8BE714DB1EDDFE9100E101CC /* ColorPickerStyleKit.swift */,
 				8BE714E51EDF8EA300E101CC /* CapStyleStyleKit.swift */,
 				8BE714E71EDF8FCB00E101CC /* BearingStyleStyleKit.swift */,
+				8BE17D1D1EE7972D000C0C19 /* UserInterfaceStyleKit.swift */,
 				8BE714E31EDF424E00E101CC /* Extensions.swift */,
+				8BE17D1F1EE7987F000C0C19 /* Bebas.ttf */,
 				8BDFEB2D1EDCE19600E0244B /* Assets.xcassets */,
 				8BDFEB2F1EDCE19600E0244B /* Info.plist */,
 			);
@@ -275,6 +284,7 @@
 			files = (
 				8BDFEB2E1EDCE19600E0244B /* Assets.xcassets in Resources */,
 				8BE714DE1EDE2EF800E101CC /* GoogleService-Info-Dev.plist in Resources */,
+				8BE17D201EE7987F000C0C19 /* Bebas.ttf in Resources */,
 				8BDFEB2C1EDCE19600E0244B /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -364,6 +374,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BE17D1C1EE75997000C0C19 /* MySpinnersViewController.swift in Sources */,
 				8BE714DC1EDDFE9100E101CC /* ColorPickerStyleKit.swift in Sources */,
 				8B0AA2C11EE626F30022E499 /* Parser.swift in Sources */,
 				8BE714E81EDF8FCB00E101CC /* BearingStyleStyleKit.swift in Sources */,
@@ -372,6 +383,7 @@
 				8BE714E41EDF424E00E101CC /* Extensions.swift in Sources */,
 				8BE714E21EDE423B00E101CC /* BodyStyleStyleKit.swift in Sources */,
 				8BDFEB291EDCE19600E0244B /* MessagesViewController.swift in Sources */,
+				8BE17D1E1EE7972D000C0C19 /* UserInterfaceStyleKit.swift in Sources */,
 				8BE714D81EDDD46800E101CC /* SpinnerViewController.swift in Sources */,
 				8BE714E61EDF8EA300E101CC /* CapStyleStyleKit.swift in Sources */,
 				8BE714D61EDD08FA00E101CC /* iMessage.swift in Sources */,

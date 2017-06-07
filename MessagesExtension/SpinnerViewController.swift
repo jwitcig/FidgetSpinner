@@ -11,6 +11,7 @@ import SpriteKit
 import UIKit
 
 import Cartography
+import FirebaseDatabase
 
 import iMessageTools
 import JWSwiftTools
@@ -43,6 +44,7 @@ class SpinnerViewController: UIViewController {
     var editDrawerHiddenConstraint: ConstraintGroup?
     var editDrawerVisibleConstraint: ConstraintGroup?
     
+    var spinnerSlot = 0
     var customizerSelection = 0
     
     var bodyColor: UIColor = .white
@@ -115,10 +117,10 @@ class SpinnerViewController: UIViewController {
         
         designOptionsButtons = [bodyButton, bearingButton, capButton]
         
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(SpinnerViewController.designButtonPressed(recognizer:)))
-        
         for button in designOptionsButtons {
-            button.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(SpinnerViewController.designButtonPressed(recognizer:))))
+            let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(SpinnerViewController.designButtonPressed(recognizer:)))
+
+            button.addGestureRecognizer(tapRecognizer)
         }
         
         let componentsStack = UIStackView(arrangedSubviews: designOptionsButtons)
@@ -180,12 +182,8 @@ class SpinnerViewController: UIViewController {
         let styleScrollView = UIScrollView()
         
         styleScrollView.translatesAutoresizingMaskIntoConstraints = false
-        bodyStylePicker.translatesAutoresizingMaskIntoConstraints = false
         
         styleScrollView.addSubview(bodyStylePicker)
-        
-        styleScrollView.showsHorizontalScrollIndicator = false
-        styleScrollView.showsVerticalScrollIndicator = false
         
         bodyStylePickerConstraints = constrain(bodyStylePicker, styleScrollView) {
             $0.leading == $1.leading
@@ -214,15 +212,10 @@ class SpinnerViewController: UIViewController {
                                      capStyle: self.capStyle)
         }
         
-//        let bearingStyleScrollView = UIScrollView()
         
-        styleScrollView.translatesAutoresizingMaskIntoConstraints = false
         bearingStylePicker.translatesAutoresizingMaskIntoConstraints = false
         
         styleScrollView.addSubview(bearingStylePicker)
-        
-        styleScrollView.showsHorizontalScrollIndicator = false
-        styleScrollView.showsVerticalScrollIndicator = false
         
         bearingStylePickerConstraints = constrain(bearingStylePicker, styleScrollView) {
             $0.leading == $1.leading
@@ -249,16 +242,10 @@ class SpinnerViewController: UIViewController {
                                      bearingStyle: self.bearingStyle,
                                      capStyle: self.capStyle)
         }
-        
-//        let capStyleScrollView = UIScrollView()
-        
-        styleScrollView.translatesAutoresizingMaskIntoConstraints = false
+    
         capStylePicker.translatesAutoresizingMaskIntoConstraints = false
         
         styleScrollView.addSubview(capStylePicker)
-        
-        styleScrollView.showsHorizontalScrollIndicator = false
-        styleScrollView.showsVerticalScrollIndicator = false
         
         capStylePickerConstraints = constrain(capStylePicker, styleScrollView) {
             $0.leading == $1.leading
@@ -306,15 +293,45 @@ class SpinnerViewController: UIViewController {
         guard let hidden = editDrawerHiddenConstraint,
               let visible = editDrawerVisibleConstraint else { return }
         
+        let database = FIRDatabase.database().reference()
+        let spinners = database.child("spinners")
+        
         if hidden.active {
             hidden.active = false
             visible.active = true
+            
+            spinners.child(spinnerSlot.string!).observe(.value, with: {
+                guard let value = $0.value as? [String : Any] else { return }
+                
+                self.bodyColor = UIColor(ciColor: CIColor(string: value["bodyColor"]! as! String))
+                self.bearingColor = UIColor(ciColor: CIColor(string: value["bearingColor"]! as! String))
+                self.capColor = UIColor(ciColor: CIColor(string: value["capColor"]! as! String))
+                self.bodyStyle = value["bodyStyle"]! as! Int
+                self.bearingStyle = value["bearingStyle"]! as! Int
+                self.capStyle = value["capStyle"]! as! Int
+                
+                self.scene.createSpinner(bodyColor: self.bodyColor,
+                                         bearingColor: self.bearingColor,
+                                         capColor: self.capColor,
+                                         bodyStyle: self.bodyStyle,
+                                         bearingStyle: self.bearingStyle,
+                                         capStyle: self.capStyle)
+            })
 
             UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
             
         } else {
             visible.active = false
             hidden.active = true
+        
+            spinners.child(spinnerSlot.string!).setValue([
+                "bodyColor" : CIColor(cgColor: self.bodyColor.cgColor).stringRepresentation,
+             "bearingColor" : CIColor(cgColor: self.bearingColor.cgColor).stringRepresentation,
+                 "capColor" : CIColor(cgColor: self.capColor.cgColor).stringRepresentation,
+                "bodyStyle" : self.bodyStyle,
+             "bearingStyle" : self.bearingStyle,
+                 "capStyle" : self.capStyle,
+            ])
             
             UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
         }
@@ -332,11 +349,16 @@ class SpinnerViewController: UIViewController {
         let selectedMessage = (messageSender as? MSMessagesAppViewController)?.activeConversation?.selectedMessage
         let session = SpinSession(instance: instance, initial: initial, ended: false, message: selectedMessage)
         
-        let spinnerImage = UIImage(cgImage: skView.texture(from: scene.spinner)!.cgImage())
+        let spinnerImage = UIImage(cgImage: skView.texture(from: scene.spinner)!.cgImage()).scaled(to: CGSize(width: 200, height: 200))
         
-        let layout = SpinMessageLayoutBuilder(spinnerImage: spinnerImage, time: time, spins: spins).generateLayout()
+        let messageImage = UserInterfaceStyleKit.imageOfInsertedSpinnerMessage(savedSpinnerImage: spinnerImage)
         
-        let writer = SpinMessageWriter(data: session.dictionary, session: selectedMessage?.session)
+        let layout = SpinMessageLayoutBuilder(spinnerImage: messageImage,
+                                                      time: time,
+                                                     spins: spins).generateLayout()
+        
+        let writer = SpinMessageWriter(data: session.dictionary,
+                                    session: selectedMessage?.session)
 
         guard let newMessage = writer?.message else { return }
         
@@ -704,3 +726,14 @@ class PaintCodeView: UIView {
     }
 }
 
+extension UIImage {
+    public func scaled(to size: CGSize) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(size, false, 0);
+        self.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return newImage
+    }
+}
