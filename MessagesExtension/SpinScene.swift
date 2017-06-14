@@ -9,6 +9,8 @@
 import UIKit
 import SpriteKit
 
+import FirebaseDatabase
+
 import JWSwiftTools
 
 struct TimedLocation {
@@ -26,15 +28,21 @@ class SpinScene: SKScene {
     
     var previousFrameRotation: CGFloat = 0
     
+    var scoreboard: UIView!
+    
     var spinCount = 0 {
         didSet {
             spinCountLabel.text = String(spinCount)
+            game.spins = spinCount
         }
     }
     
     var spinStartTime: Date?
+    var spinEndTime: Date?
     
     var spinStart: TimedLocation?
+    
+    var updateScoreboard: ((CGFloat, Int)->())!
     
     lazy var spinTimeLabel: SKLabelNode = {
         let label = SKLabelNode(text: "0")
@@ -69,58 +77,59 @@ class SpinScene: SKScene {
             }
         }
         
-        
         let imageSize = CGSize(width: 104, height: 104)
         var image: UIImage?
         UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
         BearingStyles.draw(body: bearingStyle,
                            rect: CGRect(origin: .zero, size: imageSize),
-                       resizing: .aspectFit,
-                      bodyColor: bearingColor)
-
+                           resizing: .aspectFit,
+                           bodyColor: bearingColor)
+        
         image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-
+        
         
         UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
         CapStyles.draw(body: capStyle,
                        rect: CGRect(origin: .zero, size: imageSize),
-                   resizing: .aspectFit,
-                  bodyColor: capColor)
-    
+                       resizing: .aspectFit,
+                       bodyColor: capColor)
+        
         image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-
+        
         
         let spinnerSize = CGSize(width: 360, height: 328)
         
         UIGraphicsBeginImageContextWithOptions(spinnerSize, false, 0)
         BodyStyles.draw(body: bodyStyle,
                         rect: CGRect(origin: .zero, size: spinnerSize),
-                    resizing: .aspectFit,
-                   bodyColor: bodyColor,
-                       image: image ?? UIImage())
+                        resizing: .aspectFit,
+                        bodyColor: bodyColor,
+                        image: image ?? UIImage())
         
         let spinnerImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
-
+        
         let texture = SKTexture(image: spinnerImage)
         let body = SKSpriteNode(texture: texture)
         
-        body.position = CGPoint(x: 0, y: 35)
+        let yOffset = 10
+        body.position = CGPoint(x: 0, y: yOffset)
         
-        let physics = SKPhysicsBody(circleOfRadius: 100, center: CGPoint(x: 0, y: -35))
+        let physics = SKPhysicsBody(circleOfRadius: 100, center: CGPoint(x: 0, y: -yOffset))
         physics.pinned = true
 //        physics.friction = 0.2
 //        physics.angularDamping = 0.05
         
         physics.friction = 1.0
         physics.angularDamping = 1.0
-
+        
         
         body.physicsBody = physics
         
         self.spinner = body
+            
         addChild(spinner)
     }
     
@@ -150,10 +159,23 @@ class SpinScene: SKScene {
                 spinCount += 1
             }
         }
-        
+                
         if isDecelerating {
             if abs(spinner.physicsBody!.angularVelocity) < 0.5 {
                 stopSpinner()
+            }
+        }
+        
+        if let start = spinStartTime {
+            
+            if isStopped {
+                guard let end = spinEndTime else {
+                    spinEndTime = Date()
+                    return
+                }
+                updateScoreboard(CGFloat(end.timeIntervalSince(start)), spinCount)
+            } else {
+                updateScoreboard(CGFloat(Date().timeIntervalSince(start)), spinCount)
             }
         }
     }
@@ -172,9 +194,11 @@ class SpinScene: SKScene {
         
         isStopped = true
         
+        spinEndTime = Date()
+        
         spinner.physicsBody?.allowsRotation = false
         
-        game.finish()
+        game.finish()        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

@@ -15,7 +15,29 @@ class MySpinnersViewController: UIViewController {
 
     var spinners: [Spinner] = []
     
-    var collectionView = UICollectionView()
+    let collectionView: UICollectionView
+    
+    var onSelection: ((Spinner)->())!
+    
+    init(onSelection: @escaping (Spinner)->()) {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: 130, height: 130)
+        layout.scrollDirection = .vertical
+        collectionView = UICollectionView(frame: CGRect(origin: .zero, size: CGSize(width: 1, height: 1)), collectionViewLayout: layout)
+        collectionView.register(CustomSpinnerCell.self, forCellWithReuseIdentifier: "CustomSpinnerCell")
+        collectionView.register(NewCustomSpinnerCell.self, forCellWithReuseIdentifier: "NewCustomSpinnerCell")
+        
+        self.onSelection = onSelection
+        
+        super.init(nibName: nil, bundle: nil)
+        
+        collectionView.dataSource = self
+        collectionView.delegate = self
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,9 +50,20 @@ class MySpinnersViewController: UIViewController {
         
         let database = FIRDatabase.database().reference()
         database.child("spinners").observe(.value, with: {
-            guard let spinnersData = $0.children.allObjects as? [[String : Any]] else { return }
             
-            self.spinners = spinnersData.map { Spinner(dictionary: $0)! }
+            print($0.children.allObjects)
+            
+            guard let spinnersData = $0.children.allObjects as? [FIRDataSnapshot] else { return }
+            
+            let sortedSpinnersData = spinnersData.sorted { $0.key > $1.key }
+            
+            self.spinners = sortedSpinnersData.map {
+                var value = $0.value! as! [String : Any]
+                value["name"] = $0.key
+                return Spinner(dictionary: value)!
+            }
+            
+            self.collectionView.reloadData()
         })
     }
 }
@@ -42,32 +75,65 @@ extension MySpinnersViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = UICollectionViewCell()
+        guard indexPath.row > 0 else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NewCustomSpinnerCell", for: indexPath) as! NewCustomSpinnerCell
+            
+            let database = FIRDatabase.database().reference()
+            let name = database.child("spinners").childByAutoId().key
+            cell.spinner = Spinner(name: name)
+            cell.onSelection = onSelection
+            return cell
+        }
+
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CustomSpinnerCell", for: indexPath) as! CustomSpinnerCell
+        
+        cell.spinner = spinners[indexPath.row-1]
+        
+        cell.onSelection = onSelection
         return cell
     }
 }
 
 extension MySpinnersViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return spinners.count
+        return spinners.count + 1
     }
 }
 
-struct Spinner {
-    let bodyStyle: Int
-    let bearingStyle: Int
-    let capStyle: Int
-    let bodyColor: UIColor
-    let bearingColor: UIColor
-    let capColor: UIColor
+extension MySpinnersViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsetsMake(20, 20, 20, 20)
+    }
+}
+
+class NewCustomSpinnerCell: UICollectionViewCell {
+    var spinner: Spinner!
+    var onSelection: ((Spinner)->())!
+
+    override func draw(_ rect: CGRect) {
+        UserInterfaceStyleKit.drawCreateNewSpinner(frame: rect, resizing: .aspectFit)
+    }
     
-    init?(dictionary: [String : Any]) {
-        self.bodyStyle = dictionary["bodyStyle"]! as! Int
-        self.bearingStyle = dictionary["bodyStyle"]! as! Int
-        self.capStyle = dictionary["bodyStyle"]! as! Int
-        
-        self.bodyColor = UIColor(ciColor: CIColor(string: dictionary["bodyColor"]! as! String))
-        self.bearingColor = UIColor(ciColor: CIColor(string: dictionary["bearingColor"]! as! String))
-        self.capColor = UIColor(ciColor: CIColor(string: dictionary["capColor"]! as! String))
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onSelection(spinner)
+    }
+}
+
+class CustomSpinnerCell: UICollectionViewCell {
+    var spinner: Spinner! {
+        didSet {
+            spinnerImage = spinner.imageOfSpinner().scaled(to: CGSize(width: 145, height: 145))
+        }
+    }
+    private var spinnerImage: UIImage!
+    
+    var onSelection: ((Spinner)->())!
+    
+    override func draw(_ rect: CGRect) {
+        UserInterfaceStyleKit.drawSavedSpinner(frame: rect, resizing: .aspectFit, savedSpinnerImage: spinnerImage, customSpinnerImageSize: spinnerImage.size)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onSelection(spinner)
     }
 }

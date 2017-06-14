@@ -35,7 +35,8 @@ class SpinnerViewController: UIViewController {
     
     var editButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setTitle("edit", for: .normal)
+        button.setTitle("", for: .normal)
+        button.setTitleColor(.black, for: .normal)
         button.addTarget(self, action: #selector(SpinnerViewController.toggleEditMode(sender:)), for: .touchUpInside)
         return button
     }()
@@ -44,7 +45,7 @@ class SpinnerViewController: UIViewController {
     var editDrawerHiddenConstraint: ConstraintGroup?
     var editDrawerVisibleConstraint: ConstraintGroup?
     
-    var spinnerSlot = 0
+    var spinnerSlot = ""
     var customizerSelection = 0
     
     var bodyColor: UIColor = .white
@@ -62,13 +63,30 @@ class SpinnerViewController: UIViewController {
     var bearingStylePickerConstraints: ConstraintGroup!
     var capStylePickerConstraints: ConstraintGroup!
     
-    init(previousSession: SpinSession?, messageSender: MessageSender, orientationManager: OrientationManager) {
+    var previousSession: SpinSession?
+    
+    lazy var scoreboard: PaintCodeView = {
+        PaintCodeView {
+            let formatter = NumberFormatter()
+            formatter.maximumFractionDigits = 1
+            
+            let formattedTime = formatter.string(from: NSNumber(value: self.game.time.float!))!
+            
+            UserInterfaceStyleKit.drawScore(frame: $0, resizing: .aspectFit, scoreTimeText: formattedTime, scoreSpinsCount: self.game.spins.string!)
+        }
+    }()
+    
+    init(previousSession: SpinSession?, messageSender: MessageSender, orientationManager: OrientationManager, spinner: Spinner) {
         self.messageSender = messageSender
         self.orientationManager = orientationManager
-      
+        
+        self.previousSession = previousSession
+        
+        self.spinnerSlot = spinner.name
+        
         super.init(nibName: nil, bundle: nil)
         
-        configureScene(previousSession: previousSession)
+        configureScene(previousSession: previousSession, spinner: spinner)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -82,37 +100,54 @@ class SpinnerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        createColorPickers()
+        orientationManager?.requestPresentationStyle(.expanded)
         
-        view.addSubview(editButton)
+        view.addSubview(scoreboard)
         
-        constrain(editButton, view) {
+        constrain(scoreboard, view) {
             $0.leading == $1.leading
-            $0.top == $1.top
+            $0.trailing == $1.trailing
+            
+            $0.bottom == $1.bottom
+            
+            $0.width == $0.height * 375/69.0
         }
+        
+        createColorPickers()
     }
     
-    private func configureScene(previousSession: SpinSession?) {
+    private func configureScene(previousSession: SpinSession?, spinner: Spinner) {
         let lifeCycle = LifeCycle(started: nil, finished: self.finished)
         
         self.game = SpinGame(previousSession: previousSession, cycle: lifeCycle)
         scene.game = self.game
         
+        scene.scoreboard = scoreboard
+        
+        scene.updateScoreboard = {
+            self.game.time = $0
+            self.game.spins = $1
+            
+            self.scoreboard.setNeedsDisplay()
+        }
+        
         skView.presentScene(scene)
+        
+        scene.createSpinner(bodyColor: spinner.bodyColor, bearingColor: spinner.bearingColor, capColor: spinner.capColor, bodyStyle: spinner.bodyStyle, bearingStyle: spinner.bearingStyle, capStyle: spinner.capStyle)
     }
     
     func createColorPickers() {
         
         let bodyButton = PaintCodeView { rect in
-            ButtonsStyleKit.drawSpinnerPickerButton(frame: rect, resizing: .aspectFit)
+            UserInterfaceStyleKit.drawSpinnerBodyTypeButton(frame: rect, resizing: .aspectFit, buttonSelected: self.customizerSelection == 0)
         }
         
         let bearingButton = PaintCodeView { rect in
-            ButtonsStyleKit.drawBearingPickerButton(frame: rect, resizing: .aspectFit)
+            UserInterfaceStyleKit.drawSpinnerBearingTypeButton(frame: rect, resizing: .aspectFit, buttonSelected: self.customizerSelection == 1)
         }
         
         let capButton = PaintCodeView { rect in
-            ButtonsStyleKit.drawCapPickerButton(frame: rect, resizing: .aspectFit)
+            UserInterfaceStyleKit.drawSpinnerCapTypeButton(frame: rect, resizing: .aspectFit, buttonSelected: self.customizerSelection == 2)
         }
         
         designOptionsButtons = [bodyButton, bearingButton, capButton]
@@ -286,6 +321,25 @@ class SpinnerViewController: UIViewController {
         
         editDrawer = customizerStack
         
+        let drawerBackground = PaintCodeView {
+            UserInterfaceStyleKit.drawEditDrawer(frame: $0, editDrawerButton: #imageLiteral(resourceName: "EditButton"))
+        }
+        
+        customizerStack.insertSubview(drawerBackground, belowSubview: customizerStack.subviews[0])
+        constrain(drawerBackground, customizerStack) {
+            $0.leading == $1.leading
+            $0.trailing == $1.trailing
+            $0.top == $1.top
+            $0.bottom == $1.bottom + 44
+        }
+        
+        view.addSubview(editButton)
+        
+        constrain(editButton, drawerBackground) {
+            $0.centerX == $1.centerX
+            $0.bottom == $1.bottom
+        }
+        
         selectDesignButton(bodyButton)
     }
     
@@ -300,7 +354,7 @@ class SpinnerViewController: UIViewController {
             hidden.active = false
             visible.active = true
             
-            spinners.child(spinnerSlot.string!).observe(.value, with: {
+            spinners.child(spinnerSlot).observe(.value, with: {
                 guard let value = $0.value as? [String : Any] else { return }
                 
                 self.bodyColor = UIColor(ciColor: CIColor(string: value["bodyColor"]! as! String))
@@ -324,22 +378,34 @@ class SpinnerViewController: UIViewController {
             visible.active = false
             hidden.active = true
         
-            spinners.child(spinnerSlot.string!).setValue([
+            spinners.child(spinnerSlot).setValue([
                 "bodyColor" : CIColor(cgColor: self.bodyColor.cgColor).stringRepresentation,
-             "bearingColor" : CIColor(cgColor: self.bearingColor.cgColor).stringRepresentation,
-                 "capColor" : CIColor(cgColor: self.capColor.cgColor).stringRepresentation,
+                "bearingColor" : CIColor(cgColor: self.bearingColor.cgColor).stringRepresentation,
+                "capColor" : CIColor(cgColor: self.capColor.cgColor).stringRepresentation,
                 "bodyStyle" : self.bodyStyle,
-             "bearingStyle" : self.bearingStyle,
-                 "capStyle" : self.capStyle,
-            ])
+                "bearingStyle" : self.bearingStyle,
+                "capStyle" : self.capStyle,
+                ], withCompletionBlock: { (error, ref) in
+                    print(error)
+                    print(ref)
+            })
+//            
+//            spinners.child(spinnerSlot).setValue([
+//                "bodyColor" : CIColor(cgColor: self.bodyColor.cgColor).stringRepresentation,
+//                "bearingColor" : CIColor(cgColor: self.bearingColor.cgColor).stringRepresentation,
+//                "capColor" : CIColor(cgColor: self.capColor.cgColor).stringRepresentation,
+//                "bodyStyle" : self.bodyStyle,
+//                "bearingStyle" : self.bearingStyle,
+//                "capStyle" : self.capStyle,
+//                ])
             
             UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
         }
     }
     
     func finished() {
-        let exactTime = Date().timeIntervalSince(scene.spinStartTime!).cgFloat!
-        let time = Double(round(100*exactTime)/100).cgFloat!
+        let exactTime = game.time
+        let time = Double(round(10*exactTime)/10).cgFloat!
         
         let spins = scene.spinCount
         
@@ -374,10 +440,8 @@ class SpinnerViewController: UIViewController {
     
     func selectDesignButton(_ button: UIView) {
         for button in designOptionsButtons {
-            button.backgroundColor = .clear
+            button.setNeedsDisplay()
         }
-        
-        button.backgroundColor = .white
         
         let buttonIndex = designOptionsButtons.index(of: button)!
         self.customizerSelection = buttonIndex

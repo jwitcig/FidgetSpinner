@@ -40,10 +40,15 @@ class MessagesViewController: MSMessagesAppViewController {
             session = SpinMessageReader(message: message)?.session
         }
         
-        gameController = SpinnerViewController(previousSession: session, messageSender: self, orientationManager: self)
+//        present(gameController!)
         
-        present(gameController!)
+        let mySpinnersController = MySpinnersViewController {
+            self.gameController = SpinnerViewController(previousSession: session, messageSender: self, orientationManager: self, spinner: $0)
 
+            self.present(self.gameController!)
+        }
+        
+        present(mySpinnersController)
     }
     
     func handleStarterEvent(message: MSMessage, conversation: MSConversation) {
@@ -51,14 +56,18 @@ class MessagesViewController: MSMessagesAppViewController {
         
         let session = SpinMessageReader(message: message)?.session
         
-        gameController = SpinnerViewController(previousSession: session, messageSender: self, orientationManager: self)
+        let mySpinnersController = MySpinnersViewController {
+            self.gameController = SpinnerViewController(previousSession: session, messageSender: self, orientationManager: self, spinner: $0)
+            
+            self.present(self.gameController!)
+        }
         
-        present(gameController!)
+//        present(gameController!)
     }
     
     func clearExistingControllers() {
         if let controller = gameController {
-            throwAway(controller: controller)
+//            throwAway(controller: controller)
         }
     }
     
@@ -94,9 +103,27 @@ class MessagesViewController: MSMessagesAppViewController {
     }
     
     override func willTransition(to presentationStyle: MSMessagesAppPresentationStyle) {
-        // Called before the extension transitions to a new presentation style.
+        switch presentationStyle {
+            
+        case .compact:
+            
+            let session = gameController?.previousSession
+            
+            clearExistingControllers()
+            
+            let mySpinnersController = MySpinnersViewController {
+                self.gameController = SpinnerViewController(previousSession: session, messageSender: self, orientationManager: self, spinner: $0)
+                
+                self.present(self.gameController!)
+            }
+            
+            present(mySpinnersController)
+            
+        case .expanded:
+            
+            break
+        }
     
-        // Use this method to prepare for the change in presentation style.
     }
     
     override func didTransition(to presentationStyle: MSMessagesAppPresentationStyle) {
