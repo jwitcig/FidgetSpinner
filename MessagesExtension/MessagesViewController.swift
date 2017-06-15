@@ -23,11 +23,13 @@ class MessagesViewController: MSMessagesAppViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let options = FIROptions(contentsOfFile:  Bundle(for: type(of: self) as AnyClass).path(forResource: "GoogleService-Info-Dev", ofType: "plist"))!
-        FIRApp.configure(with: options)
+        let options = FirebaseOptions(contentsOfFile:  Bundle(for: type(of: self) as AnyClass).path(forResource: "GoogleService-Info-Dev", ofType: "plist")!)!
+        FirebaseApp.configure(options: options)
         
-        let database = FIRDatabase.database()
-        database.persistenceEnabled = true
+//        GADMobileAds.configure(withApplicationID: "ca-app-pub-3940256099942544/2934735716")
+        
+        let database = Database.database()
+        database.isPersistenceEnabled = true
         database.goOffline()
     }
     

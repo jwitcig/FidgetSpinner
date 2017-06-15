@@ -18,11 +18,16 @@ struct TimedLocation {
     let time: Date
 }
 
+enum Background {
+    case play, edit
+}
+
 class SpinScene: SKScene {
 
     var isDecelerating = false
     
     var isStopped = false
+    var isEditing = false
     
     var spinner: SKNode!
     
@@ -68,6 +73,28 @@ class SpinScene: SKScene {
         addChild(spinCountLabel)
         
         createSpinner(bodyColor: .blue, bearingColor: .clear, capColor: .clear, bodyStyle: 0, bearingStyle: 0, capStyle: 0)
+        
+        changeBackground(to: .play)
+    }
+    
+    func changeBackground(to mode: Background) {
+        if let existing = childNode(withName: "play-background") ?? childNode(withName: "edit-background") {
+            
+            let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+            let remove = SKAction.removeFromParent()
+            existing.run(SKAction.sequence([fadeOut, remove]))
+        }
+        
+        let texture = SKTexture(image: mode == .play ? #imageLiteral(resourceName: "Play_SpinnerBackground") : #imageLiteral(resourceName: "Edit_SpinnerBackground"))
+        let background = SKSpriteNode(texture: texture, size: self.view!.frame.size)
+        background.name = mode == .play ? "play-background" : "edit-background"
+        background.zPosition = -10
+        addChild(background)
+        
+        
+        
+        let fadeIn = SKAction.fadeIn(withDuration: 0.2)
+        background.run(fadeIn)
     }
     
     func createSpinner(bodyColor: UIColor, bearingColor: UIColor, capColor: UIColor, bodyStyle: Int, bearingStyle: Int, capStyle: Int) {
@@ -181,6 +208,8 @@ class SpinScene: SKScene {
     }
     
     func startSpinner(velocity: CGFloat) {
+        guard !isEditing else { return }
+        
         spinner.constraints = []
         spinner.physicsBody?.angularVelocity = velocity
         

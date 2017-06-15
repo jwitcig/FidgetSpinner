@@ -21,7 +21,7 @@ class MySpinnersViewController: UIViewController {
     
     init(onSelection: @escaping (Spinner)->()) {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 130, height: 130)
+        layout.itemSize = CGSize(width: 100, height: 100)
         layout.scrollDirection = .vertical
         collectionView = UICollectionView(frame: CGRect(origin: .zero, size: CGSize(width: 1, height: 1)), collectionViewLayout: layout)
         collectionView.register(CustomSpinnerCell.self, forCellWithReuseIdentifier: "CustomSpinnerCell")
@@ -42,18 +42,30 @@ class MySpinnersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(collectionView)
-        constrain(collectionView, view) {
-            $0.size == $1.size
-            $0.center == $1.center
+        let topView = PaintCodeView {
+            LogoStyleKit.drawViewBanner(frame: $0, resizing: .aspectFit)
         }
         
-        let database = FIRDatabase.database().reference()
+        view.addSubview(topView)
+        view.addSubview(collectionView)
+        constrain(topView, collectionView, view) {
+            $0.leading == $2.leading
+            $0.trailing == $2.trailing
+            $0.top == $2.top
+            $0.width == $0.height * 1183/182.0
+            
+            $1.leading == $2.leading
+            $1.trailing == $2.trailing
+            $1.top == $0.bottom
+            $1.bottom == $2.bottom
+        }
+        
+        let database = Database.database().reference()
         database.child("spinners").observe(.value, with: {
             
             print($0.children.allObjects)
             
-            guard let spinnersData = $0.children.allObjects as? [FIRDataSnapshot] else { return }
+            guard let spinnersData = $0.children.allObjects as? [DataSnapshot] else { return }
             
             let sortedSpinnersData = spinnersData.sorted { $0.key > $1.key }
             
@@ -75,10 +87,10 @@ extension MySpinnersViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        guard indexPath.row > 0 else {
+        guard indexPath.row != collectionView.numberOfItems(inSection: indexPath.section) - 1 else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NewCustomSpinnerCell", for: indexPath) as! NewCustomSpinnerCell
             
-            let database = FIRDatabase.database().reference()
+            let database = Database.database().reference()
             let name = database.child("spinners").childByAutoId().key
             cell.spinner = Spinner(name: name)
             cell.onSelection = onSelection
@@ -102,7 +114,7 @@ extension MySpinnersViewController: UICollectionViewDelegate {
 
 extension MySpinnersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsetsMake(20, 20, 20, 20)
+        return UIEdgeInsetsMake(20, 40, 20, 40)
     }
 }
 
@@ -122,7 +134,7 @@ class NewCustomSpinnerCell: UICollectionViewCell {
 class CustomSpinnerCell: UICollectionViewCell {
     var spinner: Spinner! {
         didSet {
-            spinnerImage = spinner.imageOfSpinner().scaled(to: CGSize(width: 145, height: 145))
+            spinnerImage = spinner.imageOfSpinner().scaled(to: CGSize(width: 115, height: 115))
         }
     }
     private var spinnerImage: UIImage!

@@ -12,6 +12,7 @@ import UIKit
 
 import Cartography
 import FirebaseDatabase
+//import GoogleMobileAds
 
 import iMessageTools
 import JWSwiftTools
@@ -21,6 +22,8 @@ class SpinnerViewController: UIViewController {
     var skView: SKView {
         return view as! SKView
     }
+    
+//    var adView: GADBannerView!
     
     var scene = SpinScene()
     
@@ -48,9 +51,9 @@ class SpinnerViewController: UIViewController {
     var spinnerSlot = ""
     var customizerSelection = 0
     
-    var bodyColor: UIColor = .white
-    var bearingColor: UIColor = .white
-    var capColor: UIColor = .white
+    var bodyColor: UIColor = ColorPicker.allColors[0]
+    var bearingColor: UIColor = ColorPicker.allColors[0]
+    var capColor: UIColor = ColorPicker.allColors[0]
     var bodyStyle = 0
     var bearingStyle = 0
     var capStyle = 0
@@ -114,6 +117,15 @@ class SpinnerViewController: UIViewController {
         }
         
         createColorPickers()
+        
+//        adView = GADBannerView(adSize: kGADAdSizeFullBanner)
+//        self.view.addSubview(adView)
+//        
+//        adView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+//        adView.rootViewController = self
+//        let request = GADRequest()
+//        request.testDevices = [kGADSimulatorID]
+//        adView.load(request)
     }
     
     private func configureScene(previousSession: SpinSession?, spinner: Spinner) {
@@ -298,7 +310,7 @@ class SpinnerViewController: UIViewController {
         let customizerStack = UIStackView(arrangedSubviews: [componentsStack, styleScrollView, colorScrollView])
         customizerStack.axis = .vertical
         customizerStack.alignment = .fill
-        customizerStack.distribution = .fillEqually
+        customizerStack.distribution = .fillProportionally
         
         view.addSubview(customizerStack)
         
@@ -307,7 +319,7 @@ class SpinnerViewController: UIViewController {
             
             $0.width == $1.width
             
-            $0.height == 50 * 3
+            $0.height == 50 * 3 // color picker is 10 shorter
         }
         
         editDrawerVisibleConstraint = constrain(customizerStack, view) {
@@ -344,13 +356,19 @@ class SpinnerViewController: UIViewController {
     }
     
     func toggleEditMode(sender: Any) {
+        guard !scene.isDecelerating else { return }
+        
         guard let hidden = editDrawerHiddenConstraint,
               let visible = editDrawerVisibleConstraint else { return }
         
-        let database = FIRDatabase.database().reference()
+        let database = Database.database().reference()
         let spinners = database.child("spinners")
         
         if hidden.active {
+            scene.changeBackground(to: .edit)
+            
+            scene.isEditing = true
+            
             hidden.active = false
             visible.active = true
             
@@ -375,6 +393,10 @@ class SpinnerViewController: UIViewController {
             UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
             
         } else {
+            scene.changeBackground(to: .play)
+            
+            scene.isEditing = false
+            
             visible.active = false
             hidden.active = true
         
@@ -431,6 +453,8 @@ class SpinnerViewController: UIViewController {
         messageSender?.send(message: newMessage,
                              layout: layout,
                   completionHandler: nil)
+        
+        orientationManager?.requestPresentationStyle(.compact)
     }
     
     func designButtonPressed(recognizer: UIGestureRecognizer) {
@@ -640,7 +664,7 @@ class ColorPicker: UIStackView {
             
             constrain(colorView) {
                 $0.width == $0.height
-                $0.height == 50
+                $0.height == 40
             }
         }
     }
