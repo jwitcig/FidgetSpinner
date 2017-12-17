@@ -11,7 +11,6 @@ import SpriteKit
 import UIKit
 
 import Cartography
-import FirebaseDatabase
 //import GoogleMobileAds
 
 import iMessageTools
@@ -361,9 +360,6 @@ class SpinnerViewController: UIViewController {
         guard let hidden = editDrawerHiddenConstraint,
               let visible = editDrawerVisibleConstraint else { return }
         
-        let database = Database.database().reference()
-        let spinners = database.child("spinners")
-        
         if hidden.active {
             scene.changeBackground(to: .edit)
             
@@ -372,24 +368,22 @@ class SpinnerViewController: UIViewController {
             hidden.active = false
             visible.active = true
             
-            spinners.child(spinnerSlot).observe(.value, with: {
-                guard let value = $0.value as? [String : Any] else { return }
-                
-                self.bodyColor = UIColor(ciColor: CIColor(string: value["bodyColor"]! as! String))
-                self.bearingColor = UIColor(ciColor: CIColor(string: value["bearingColor"]! as! String))
-                self.capColor = UIColor(ciColor: CIColor(string: value["capColor"]! as! String))
-                self.bodyStyle = value["bodyStyle"]! as! Int
-                self.bearingStyle = value["bearingStyle"]! as! Int
-                self.capStyle = value["capStyle"]! as! Int
-                
-                self.scene.createSpinner(bodyColor: self.bodyColor,
-                                         bearingColor: self.bearingColor,
-                                         capColor: self.capColor,
-                                         bodyStyle: self.bodyStyle,
-                                         bearingStyle: self.bearingStyle,
-                                         capStyle: self.capStyle)
-            })
-
+            let defaults = UserDefaults.standard
+                        
+            self.bodyColor = UIColor(ciColor: CIColor(string: defaults.value(forKey: "bodyColor") as! String))
+            self.bearingColor = UIColor(ciColor: CIColor(string: defaults.value(forKey: "bearingColor")! as! String))
+            self.capColor = UIColor(ciColor: CIColor(string: defaults.value(forKey: "capColor")! as! String))
+            self.bodyStyle = defaults.value(forKey: "bodyStyle")! as! Int
+            self.bearingStyle = defaults.value(forKey: "bearingStyle")! as! Int
+            self.capStyle = defaults.value(forKey: "capStyle")! as! Int
+            
+            self.scene.createSpinner(bodyColor: self.bodyColor,
+                                     bearingColor: self.bearingColor,
+                                     capColor: self.capColor,
+                                     bodyStyle: self.bodyStyle,
+                                     bearingStyle: self.bearingStyle,
+                                     capStyle: self.capStyle)
+            
             UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
             
         } else {
@@ -400,26 +394,18 @@ class SpinnerViewController: UIViewController {
             visible.active = false
             hidden.active = true
         
-            spinners.child(spinnerSlot).setValue([
+            let spinner = [
                 "bodyColor" : CIColor(cgColor: self.bodyColor.cgColor).stringRepresentation,
                 "bearingColor" : CIColor(cgColor: self.bearingColor.cgColor).stringRepresentation,
                 "capColor" : CIColor(cgColor: self.capColor.cgColor).stringRepresentation,
                 "bodyStyle" : self.bodyStyle,
                 "bearingStyle" : self.bearingStyle,
                 "capStyle" : self.capStyle,
-                ], withCompletionBlock: { (error, ref) in
-                    print(error)
-                    print(ref)
-            })
-//            
-//            spinners.child(spinnerSlot).setValue([
-//                "bodyColor" : CIColor(cgColor: self.bodyColor.cgColor).stringRepresentation,
-//                "bearingColor" : CIColor(cgColor: self.bearingColor.cgColor).stringRepresentation,
-//                "capColor" : CIColor(cgColor: self.capColor.cgColor).stringRepresentation,
-//                "bodyStyle" : self.bodyStyle,
-//                "bearingStyle" : self.bearingStyle,
-//                "capStyle" : self.capStyle,
-//                ])
+            ] as [String : Any]
+
+            for (key, value) in spinner {
+                UserDefaults.standard.setValue(value, forKey: key)
+            }
             
             UIView.animate(withDuration: 0.5, animations: view.layoutIfNeeded)
         }

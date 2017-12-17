@@ -61,11 +61,11 @@ Copyright 2017 Google
 
 Copyright 2017 Google
 
-## FirebaseDatabase
+## FirebaseInstanceID
 
 Copyright 2017 Google
 
-## FirebaseInstanceID
+## Google-Mobile-Ads-SDK
 
 Copyright 2017 Google
 

@@ -6,14 +6,16 @@
  * file that was distributed with this source code.
  */
 
-#import "SVGEngine.h"
 #import <libxml/xmlreader.h>
 #import <vector>
+
+#import "SVGEngine.h"
+#import "SVGBezierPath.h"
 
 static void __attribute__((__overloadable__)) _xmlFreePtr(char * const *p) { xmlFree(*p); }
 #define xmlAutoFree __attribute__((__cleanup__(_xmlFreePtr)))
 
-NSString * const kValidSVGCommands = @"CcMmLlHhVvZzqQaAsS";
+NSString * const kValidSVGCommands = @"CcMmLlHhVvZzQqTtAaSs";
 
 struct svgParser {
     svgParser(NSString *);
@@ -30,6 +32,8 @@ protected:
     CF_RETURNS_RETAINED CGPathRef readPathTag();
     CF_RETURNS_RETAINED CGPathRef readPolygonTag();
     CF_RETURNS_RETAINED CGPathRef readRectTag();
+    CF_RETURNS_RETAINED CGPathRef readCircleTag();
+    CF_RETURNS_RETAINED CGPathRef readEllipseTag();
 
     NSDictionary *readAttributes();
     float readFloatAttribute(NSString *aName);
@@ -50,8 +54,10 @@ protected:
 
     void appendMoveTo();
     void appendLineTo();
-    void appendCurve();
-    void appendShorthandCurve();
+    void appendCubicCurve();
+    void appendShorthandCubicCurve();
+    void appendQuadraticCurve();
+    void appendShorthandQuadraticCurve();
 };
 
 struct hexTriplet {
@@ -72,7 +78,7 @@ protected:
 }
 @end
 
-static NSDictionary *_SVGParseStyle(NSString *body);
+static NSMutableDictionary *_SVGParseStyle(NSString *body);
 static NSString *_SVGFormatNumber(NSNumber *aNumber);
 
 #pragma mark -
@@ -104,13 +110,16 @@ NSArray *svgParser::parse(NSMapTable ** const aoAttributes)
             path = readPolygonTag();
         else if(type == XML_READER_TYPE_ELEMENT && strcasecmp(tag, "rect") == 0)
             path = readRectTag();
+        else if(type == XML_READER_TYPE_ELEMENT && strcasecmp(tag, "circle") == 0)
+            path = readCircleTag();
+        else if(type == XML_READER_TYPE_ELEMENT && strcasecmp(tag, "ellipse") == 0)
+            path = readEllipseTag();
         else if(strcasecmp(tag, "g") == 0) {
             if(type == XML_READER_TYPE_ELEMENT)
                 pushGroup(readAttributes());
             else if(type == XML_READER_TYPE_END_ELEMENT)
                 popGroup();
         }
-
         if(path) {
             [paths addObject:CFBridgingRelease(path)];
             
@@ -214,6 +223,33 @@ CF_RETURNS_RETAINED CGPathRef svgParser::readPolygonTag()
         return path;
 }
 
+CF_RETURNS_RETAINED CGPathRef svgParser::readCircleTag()
+{
+    NSCAssert(strcasecmp((char*)xmlTextReaderConstName(_xmlReader), "circle") == 0,
+              @"Not on a <circle>");
+    CGPoint const center = {
+        readFloatAttribute(@"cx"), readFloatAttribute(@"cy")
+    };
+    float r = readFloatAttribute(@"r");
+    CGMutablePathRef circle = CGPathCreateMutable();
+    CGPathAddEllipseInRect(circle, NULL, CGRectMake(center.x - r, center.y - r, r * 2.0, r * 2.0));
+    return circle;
+}
+
+CF_RETURNS_RETAINED CGPathRef svgParser::readEllipseTag()
+{
+    NSCAssert(strcasecmp((char*)xmlTextReaderConstName(_xmlReader), "ellipse") == 0,
+              @"Not on a <ellipse>");
+    CGPoint const center = {
+        readFloatAttribute(@"cx"), readFloatAttribute(@"cy")
+    };
+    float rx = readFloatAttribute(@"rx");
+    float ry = readFloatAttribute(@"ry");
+    CGMutablePathRef ellipse = CGPathCreateMutable();
+    CGPathAddEllipseInRect(ellipse, NULL, CGRectMake(center.x - rx, center.y - ry, rx * 2.0, ry * 2.0));
+    return ellipse;
+}
+
 NSDictionary *svgParser::readAttributes()
 {
     NSMutableDictionary * const attrs = [_attributeStack.lastObject mutableCopy]
@@ -226,9 +262,14 @@ NSDictionary *svgParser::readAttributes()
         const char * const attrName  = (char *)xmlTextReaderConstName(_xmlReader),
                    * const attrValue = (char *)xmlTextReaderConstValue(_xmlReader);
 
-        if(strcasecmp("style", attrName) == 0)
-            [attrs addEntriesFromDictionary:_SVGParseStyle(@(attrValue))];
-        else if(strcasecmp("transform", attrName) == 0) {
+        if(strcasecmp("style", attrName) == 0){
+            NSMutableDictionary *style = _SVGParseStyle(@(attrValue));
+            // Don't allow overriding of display:none
+            if (style[@"display"] && [style[@"display"] caseInsensitiveCompare:@"none"] == NSOrderedSame) {
+                [style removeObjectForKey:@"display"];
+            }
+            [attrs addEntriesFromDictionary:style];
+        } else if(strcasecmp("transform", attrName) == 0) {
             // TODO: report syntax errors
             NSScanner * const scanner = [NSScanner scannerWithString:@(attrValue)];
             NSMutableCharacterSet *skippedChars = [[NSCharacterSet whitespaceAndNewlineCharacterSet] mutableCopy];
@@ -252,11 +293,19 @@ NSDictionary *svgParser::readAttributes()
                                                                 transformOperands[2], transformOperands[3],
                                                                 transformOperands[4], transformOperands[5]);
                 else if([transformCmd isEqualToString:@"rotate"]) {
-                    // TODO: rotate about point
                     float const radians = transformOperands[0] * M_PI / 180.0;
-                    additionalTransform = CGAffineTransformMake(cosf(radians), sinf(radians),
-                                                                -sinf(radians), cosf(radians),
-                                                                0, 0);
+                    if (transformOperands.size() == 3) {
+                        float const x = transformOperands[1];
+                        float const y = transformOperands[2];
+                        additionalTransform = CGAffineTransformMake(cosf(radians), sinf(radians),
+                                                                    -sinf(radians), cosf(radians),
+                                                                    x-x*cosf(radians)+y*sinf(radians), y-x*sinf(radians)-y*cosf(radians));
+                    }
+                    else {
+                        additionalTransform = CGAffineTransformMake(cosf(radians), sinf(radians),
+                                                                    -sinf(radians), cosf(radians),
+                                                                    0, 0);
+                    }
                 } else if([transformCmd isEqualToString:@"translate"])
                     additionalTransform = CGAffineTransformMakeTranslation(transformOperands[0], transformOperands[1]);
                 else if([transformCmd isEqualToString:@"scale"])
@@ -298,7 +347,7 @@ NSDictionary *svgParser::readAttributes()
                                                                             [attrs[@"stroke-opacity"] floatValue]);
         [attrs removeObjectForKey:@"stroke-opacity"];
     }
-    return [attrs count] > 0 ? attrs : nil;
+    return attrs.count > 0 ? attrs : nil;
 }
 
 float svgParser::readFloatAttribute(NSString * const aName)
@@ -432,12 +481,18 @@ CF_RETURNS_RETAINED CGPathRef pathDefinitionParser::parse()
                 appendLineTo();
                 break;
             case 'C': case 'c':
-                appendCurve();
+                appendCubicCurve();
                 break;
             case 'S': case 's':
-                appendShorthandCurve();
+                appendShorthandCubicCurve();
                 break;
-            case 'a': case 'A':
+            case 'Q': case 'q':
+                appendQuadraticCurve();
+                break;
+            case 'T': case 't':
+                appendShorthandQuadraticCurve();
+                break;
+            case 'A': case 'a':
                 NSLog(@"*** Error: Elliptical arcs not supported"); // TODO
                 break;
             case 'Z': case 'z':
@@ -512,7 +567,8 @@ void pathDefinitionParser::appendLineTo()
     }
 }
 
-void pathDefinitionParser::appendCurve()
+
+void pathDefinitionParser::appendCubicCurve()
 {
     if(_operands.size()%6 != 0) {
         NSLog(@"*** Error: Invalid number of parameters for C command");
@@ -534,7 +590,7 @@ void pathDefinitionParser::appendCurve()
     }
 }
 
-void pathDefinitionParser::appendShorthandCurve()
+void pathDefinitionParser::appendShorthandCubicCurve()
 {
     if(_operands.size()%4 != 0) {
         NSLog(@"*** Error: Invalid number of parameters for S command");
@@ -557,6 +613,50 @@ void pathDefinitionParser::appendShorthandCurve()
         _lastControlPoint = CGPointMake(x2, y2);
     }
 }
+
+
+void pathDefinitionParser::appendQuadraticCurve()
+{
+    if(_operands.size()%4 != 0) {
+        NSLog(@"*** Error: Invalid number of parameters for Q command");
+        return;
+    }
+    
+    // (x1, y1, x, y)
+    for(NSUInteger i = 0; i < _operands.size(); i += 4) {
+        CGPoint const currentPoint = CGPathGetCurrentPoint(_path);
+        CGFloat const x1 = _operands[i+0] + (_cmd == 'q' ? currentPoint.x : 0);
+        CGFloat const y1 = _operands[i+1] + (_cmd == 'q' ? currentPoint.y : 0);
+        CGFloat const x  = _operands[i+2] + (_cmd == 'q' ? currentPoint.x : 0);
+        CGFloat const y  = _operands[i+3] + (_cmd == 'q' ? currentPoint.y : 0);
+        
+        CGPathAddQuadCurveToPoint(_path, NULL, x1, y1, x, y);
+        _lastControlPoint = CGPointMake(x1, y1);
+    }
+}
+
+void pathDefinitionParser::appendShorthandQuadraticCurve()
+{
+    if(_operands.size()%2 != 0) {
+        NSLog(@"*** Error: Invalid number of parameters for T command");
+        return;
+    }
+    if(_lastCmd != 'Q' && _lastCmd != 'q' && _lastCmd != 'T' && _lastCmd != 't')
+        _lastControlPoint = CGPathGetCurrentPoint(_path);
+    
+    // (x, y)
+    for(NSUInteger i = 0; i < _operands.size(); i += 2) {
+        CGPoint const currentPoint = CGPathGetCurrentPoint(_path);
+        CGFloat const x1 = currentPoint.x + (currentPoint.x - _lastControlPoint.x);
+        CGFloat const y1 = currentPoint.y + (currentPoint.y - _lastControlPoint.y);
+        CGFloat const x  = _operands[i+0] + (_cmd == 't' ? currentPoint.x : 0);
+        CGFloat const y  = _operands[i+1] + (_cmd == 't' ? currentPoint.y : 0);
+
+        CGPathAddQuadCurveToPoint(_path, NULL, x1, y1, x, y);
+        _lastControlPoint = CGPointMake(x1, y1);
+    }
+}
+
 
 hexTriplet::hexTriplet(NSString *str)
 {
@@ -604,7 +704,7 @@ NSString *hexTriplet::string()
             (_data & 0x0000FF)];
 }
 
-static NSDictionary *_SVGParseStyle(NSString * const body)
+static NSMutableDictionary *_SVGParseStyle(NSString * const body)
 {
     NSScanner * const scanner = [NSScanner scannerWithString:body];
     NSMutableCharacterSet * const separators = [NSMutableCharacterSet whitespaceAndNewlineCharacterSet];
@@ -628,6 +728,7 @@ static NSString *_SVGFormatNumber(NSNumber * const aNumber)
     static NSNumberFormatter *fmt;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        fmt                       = [NSNumberFormatter new];
         fmt.numberStyle           = NSNumberFormatterDecimalStyle;
         fmt.maximumFractionDigits = 3;
         fmt.decimalSeparator      = @".";

@@ -1,27 +1,20 @@
 # PocketSVG
 
-[![Build Status](https://travis-ci.org/arielelkin/PocketSVG.svg?branch=master)](https://travis-ci.org/arielelkin/PocketSVG)
+[![CocoaPods](https://img.shields.io/cocoapods/p/PocketSVG.svg?maxAge=3601)](#) [![Build Status](https://travis-ci.org/pocketsvg/PocketSVG.svg?branch=master)](https://travis-ci.org/pocketsvg/PocketSVG) [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage) [![Code Coverage](https://img.shields.io/cocoapods/metrics/doc-percent/PocketSVG.svg)](http://cocoadocs.org/docsets/PocketSVG)
 
-A simple toolkit for displaying and manipulating SVGs on iOS and macOS. 
 
-Convert your SVGs into 
+A simple toolkit for displaying and manipulating SVGs on iOS and macOS in a performant manner.
 
-* `UIView`
-* `NSView`
-* `CGPath`
-* `CALayer`
-* `UIBezierPath`
-* `NSBezierPath`
+The goal of this project is not to be a fully compliant SVG parser/renderer. But rather to use SVG as a format for serializing CG/UIPaths, meaning it only supports SVG features that can be represented by CG/UIPaths.
 
-Thoroughly documented. 
+Thoroughly documented.
 
 ## Features
 
-* Turn your SVG into an UIView/NSView 
-* Turn your SVG into a CALayer
+* Render SVG files via SVGImageView/Layer
 * Display all kinds of SVGs shapes and paths.
 * Fully working iOS and macOS demos.
-* Straightforward API for typical SVG rendering (`SVGLayer` and `SVGImageView`) 
+* Straightforward API for typical SVG rendering (`SVGLayer` and `SVGImageView`)
 * Supports more fine-grained SVG manipulation (`SVGBezierPath` and `SVGEngine`)
 
 
@@ -29,7 +22,16 @@ Thoroughly documented.
 
 ### Cocoapods
 
-Add `pod PocketSVG` to your Podfile. 
+Add `pod PocketSVG` to your Podfile.
+
+### Carthage
+
+Add this to your Cartfile:
+```
+github "pocketsvg/PocketSVG"
+```
+
+Then run `carthage update`.
 
 ### Manual
 
@@ -38,7 +40,7 @@ Drag and drop `PocketSVG.xcodeproj` into your Xcode project. In your project set
 
 ## Usage
 
-Render an SVG file into a UIView:
+Render an SVG file using SVGImageView:
 
 ```swift
 let url = NSBundle.mainBundle().URLForResource("svg_file_name", withExtension: "svg")!
@@ -46,22 +48,14 @@ let svgImageView = SVGImageView(contentsOfURL: url)
 view.addSubview(svgImageView)
 ```
 
-Render an SVG file into an NSView:
-
-```
-let svgImageView = SVGImageView(SVGNamed: "svg_file_name")
-view.addSubview(svgImageView)
-```
-
-Render each path of an SVG file into its own CALayer:
-
+Manually render each path of an SVG file into using CAShapeLayers:
 
 ```objective-c
 for(SVGBezierPath *path in [SVGBezierPath pathsFromSVGNamed:@"myImage"]) {
     // Create a layer for each path
     CAShapeLayer *layer = [CAShapeLayer layer];
     layer.path = path.CGPath;
-    
+
     // Set its display properties
     layer.lineWidth   = 4;
     layer.strokeColor = [path.svgAttributes[@"stroke"] ?: [UIColor blackColor] CGColor];
@@ -91,4 +85,4 @@ Please use the [issue tracker](https://github.com/arielelkin/pocketsvg/issues) t
 
 ### Developing
 
-PRs are welcome. 
+PRs are welcome.

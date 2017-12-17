@@ -26,11 +26,10 @@ class MessagesViewController: MSMessagesAppViewController {
         let options = FirebaseOptions(contentsOfFile:  Bundle(for: type(of: self) as AnyClass).path(forResource: "GoogleService-Info-Dev", ofType: "plist")!)!
         FirebaseApp.configure(options: options)
         
-//        GADMobileAds.configure(withApplicationID: "ca-app-pub-3940256099942544/2934735716")
+        GADMobileAds.configure(withApplicationID: "ca-app-pub-3940256099942544~1458002511")
+
         
-        let database = Database.database()
-        database.isPersistenceEnabled = true
-        database.goOffline()
+//        GADMobileAds.configure(withApplicationID: "ca-app-pub-3940256099942544/2934735716")
     }
     
     // MARK: - Conversation Handling
@@ -44,7 +43,7 @@ class MessagesViewController: MSMessagesAppViewController {
         
 //        present(gameController!)
         
-        let mySpinnersController = MySpinnersViewController {
+        let mySpinnersController = MySpinnersViewController(orientationManager: self) {
             self.gameController = SpinnerViewController(previousSession: session, messageSender: self, orientationManager: self, spinner: $0)
 
             self.present(self.gameController!)
@@ -58,7 +57,7 @@ class MessagesViewController: MSMessagesAppViewController {
         
         let session = SpinMessageReader(message: message)?.session
         
-        let mySpinnersController = MySpinnersViewController {
+        let mySpinnersController = MySpinnersViewController(orientationManager: self) {
             self.gameController = SpinnerViewController(previousSession: session, messageSender: self, orientationManager: self, spinner: $0)
             
             self.present(self.gameController!)
@@ -113,7 +112,7 @@ class MessagesViewController: MSMessagesAppViewController {
             
             clearExistingControllers()
             
-            let mySpinnersController = MySpinnersViewController {
+            let mySpinnersController = MySpinnersViewController(orientationManager: self) {
                 self.gameController = SpinnerViewController(previousSession: session, messageSender: self, orientationManager: self, spinner: $0)
                 
                 self.present(self.gameController!)

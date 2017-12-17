@@ -23,24 +23,8 @@ CGRect _AdjustCGRectForContentsGravity(CGRect aRect, CGSize aSize, NSString *aGr
 #endif
 }
 
-
-- (instancetype)initWithSVGSource:(NSString *)svgSource {
-
-    if (self = [super init]) {
-        [self commonInit];
-        self.svgSource = svgSource;
-    }
-    return self;
-}
-
-- (instancetype)initWithContentsOfURL:(NSURL *)url {
-
-    NSString *svgSource = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
-
-    return [self initWithSVGSource:svgSource];
-}
-
-- (void)commonInit {
+- (void)commonInit
+{
     _shapeLayers = [NSMutableArray new];
 #if TARGET_OS_IPHONE
     self.shouldRasterize = YES;
@@ -48,8 +32,29 @@ CGRect _AdjustCGRectForContentsGravity(CGRect aRect, CGSize aSize, NSString *aGr
 #endif
 }
 
-- (instancetype)init {
-    return [self initWithSVGSource: nil];
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (instancetype)initWithSVGSource:(NSString *)svgSource
+{
+
+    if (self = [self init]) {
+        self.svgSource = svgSource;
+    }
+    return self;
+}
+
+- (instancetype)initWithContentsOfURL:(NSURL *)url
+{
+
+    NSString *svgSource = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
+
+    return [self initWithSVGSource:svgSource];
 }
 
 - (instancetype)initWithCoder:(NSCoder * const)aDecoder
@@ -60,8 +65,8 @@ CGRect _AdjustCGRectForContentsGravity(CGRect aRect, CGSize aSize, NSString *aGr
     return self;
 }
 
-- (void)_cr_setPaths:(NSArray<SVGBezierPath*> *)paths {
-
+- (void)_cr_setPaths:(NSArray<SVGBezierPath*> *)paths
+{
     [_shapeLayers makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
     [_shapeLayers removeAllObjects];
     _untouchedPaths = [NSMutableArray new];
@@ -69,6 +74,9 @@ CGRect _AdjustCGRectForContentsGravity(CGRect aRect, CGSize aSize, NSString *aGr
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     for(__strong SVGBezierPath *path in paths) {
+        if ([path.svgAttributes[@"display"] isEqualToString:@"none"]) {
+            continue;
+        }        
         CAShapeLayer * const layer = [CAShapeLayer new];
 
         if(path.svgAttributes[@"transform"]) {
@@ -90,43 +98,38 @@ CGRect _AdjustCGRectForContentsGravity(CGRect aRect, CGSize aSize, NSString *aGr
 
 - (void)setSvgSource:(NSString * const)aSVG
 {
-    [self willChangeValueForKey:@"svgSource"];
 #ifdef DEBUG
     if(_fileWatcher)
         dispatch_source_cancel(_fileWatcher), _fileWatcher = NULL;
 #endif
 
-    _svgSource = aSVG;
-    if([aSVG length] == 0)
-        return;
-    
-    [self _cr_setPaths:[SVGBezierPath pathsFromSVGString:_svgSource]];
-
-    [self didChangeValueForKey:@"svgSource"];
+    if (aSVG.length > 0) {
+        [self _cr_setPaths:[SVGBezierPath pathsFromSVGString:aSVG]];
+    }
 }
 
-- (void)setSvgURL:(NSURL *)svgURL {
+- (void)setSvgURL:(NSURL *)svgURL
+{
+    [self willChangeValueForKey:@"svgURL"];
 
-    [self willChangeValueForKey:@"svgSource"];
+    [self _cr_setPaths:[SVGBezierPath pathsFromSVGAtURL:svgURL]];
 
-    self.svgSource = [NSString stringWithContentsOfURL:svgURL encoding:NSUTF8StringEncoding error:nil];
-
-    [self didChangeValueForKey:@"svgSource"];
+    [self didChangeValueForKey:@"svgURL"];
 }
 
 - (void)setSvgName:(NSString *)svgName {
 
 #if !TARGET_INTERFACE_BUILDER
     NSBundle * const bundle = [NSBundle mainBundle];
-    NSString * const path = [bundle pathForResource:svgName ofType:@"svg"];
-    NSParameterAssert(!svgName || path);
+    NSURL * const url = [bundle URLForResource:svgName withExtension:@"svg"];
+    NSParameterAssert(!svgName || url);
 #else
     NSString *path = nil;
     NSPredicate * const pred = [NSPredicate predicateWithFormat:@"lastPathComponent LIKE[c] %@",
-                                [aFileName stringByAppendingPathExtension:@"svg"]];
+                                [svgName stringByAppendingPathExtension:@"svg"]];
     NSString * const sourceDirs = [[NSProcessInfo processInfo] environment][@"IB_PROJECT_SOURCE_DIRECTORIES"];
     for(__strong NSString *dir in [sourceDirs componentsSeparatedByString:@":"]) {
-        // Go up the hiearchy until we don't find an xcodeproj
+        // Go up the hierarchy until we don't find an xcodeproj
         NSString *projectDir = dir;
         NSPredicate *xcodePredicate = [NSPredicate predicateWithFormat:@"self ENDSWITH[c] %@", @".xcodeproj"];
         do {
@@ -144,20 +147,13 @@ CGRect _AdjustCGRectForContentsGravity(CGRect aRect, CGSize aSize, NSString *aGr
             break;
         }
     }
+    NSURL *url = path ? [NSURL fileURLWithPath:path] : nil;
 #endif
     
-    [self willChangeValueForKey:@"svgSource"];
-    self.svgSource = [NSString stringWithContentsOfFile:path
-                                       usedEncoding:NULL
-                                              error:nil];
-
-
-    [self _cr_setPaths:[SVGBezierPath pathsFromSVGString:self.svgSource]];
-
-    [self didChangeValueForKey:@"svgSource"];
-
-#ifdef DEBUG
-    int const fdes = open([path fileSystemRepresentation], O_RDONLY);
+    self.svgURL = url;
+    
+#if defined(DEBUG) && !defined(POCKETSVG_DISABLE_FILEWATCH)
+    int const fdes = open([url fileSystemRepresentation], O_RDONLY);
     _fileWatcher = dispatch_source_create(DISPATCH_SOURCE_TYPE_VNODE, fdes,
                                           DISPATCH_VNODE_DELETE | DISPATCH_VNODE_WRITE,
                                           dispatch_get_main_queue());
@@ -242,6 +238,9 @@ CGRect _AdjustCGRectForContentsGravity(CGRect aRect, CGSize aSize, NSString *aGr
         if (_scaleLineWidth && path.svgAttributes[@"stroke-width"]) {
             CGFloat lineScale = (frame.size.width/size.width + frame.size.height/size.height) / 2.0;
             layer.lineWidth = [path.svgAttributes[@"stroke-width"] floatValue] * lineScale;
+        }
+        if (path.svgAttributes[@"fill-rule"]) {
+            layer.fillRule = [path.svgAttributes[@"fill-rule"] isEqualToString:@"evenodd"] ? kCAFillRuleEvenOdd : kCAFillRuleNonZero;
         }
         
         CGRect const pathBounds = path.bounds;

@@ -10,21 +10,55 @@
 #import "SVGLayer.h"
 #import "SVGPortability.h"
 
-@implementation SVGImageView
+@implementation SVGImageView {
+    SVGLayer *_svgLayer;
+}
+
+#if TARGET_OS_IPHONE
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if ((self = [super initWithFrame:frame])) {
+        _svgLayer = (SVGLayer *)self.layer;
+    }
+    return self;
+}
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    if ((self = [super initWithCoder:aDecoder])) {
+        _svgLayer = (SVGLayer *)self.layer;
+    }
+    return self;
+}
+#else
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if ((self = [super initWithFrame:frame])) {
+        self.wantsLayer = YES;
+        _svgLayer = [SVGLayer new];
+    }
+    return self;
+}
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    if ((self = [super initWithCoder:aDecoder])) {
+        self.wantsLayer = YES;
+        _svgLayer = [SVGLayer new];
+    }
+    return self;
+}
+#endif
 
 - (instancetype)initWithSVGSource:(NSString *)svgSource {
-    if (self = [super init]) {
+    if (self = [self init]) {
         self.svgSource = svgSource;
     }
     return self;
 }
-
-
 - (instancetype)initWithContentsOfURL:(NSURL *)url {
-
-    NSString *svgSource = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
-
-    return [self initWithSVGSource:svgSource];
+    if (self = [self init]) {
+        self.svgURL = url;
+    }
+    return self;
 }
 
 
@@ -36,13 +70,7 @@
 #else
 - (CALayer *)makeBackingLayer
 {
-    SVGLayer * const layer = [SVGLayer new];
-    layer.fillColor   = _fillColor.CGColor;
-    layer.strokeColor = _strokeColor.CGColor;
-    if (_svgSource) {
-        layer.svgSource = _svgSource;
-    }
-    return layer;
+    return _svgLayer;
 }
 - (BOOL)isFlipped
 {
@@ -54,20 +82,23 @@
 }
 #endif
 
-- (SVGLayer *)_svgLayer { return (id)self.layer; }
+- (NSString *)svgName { return _svgLayer.svgName; }
+- (void)setSvgName:(NSString * const)aFileName { _svgLayer.svgName = aFileName; }
 
-- (void)setSvgSource:(NSString * const)aSVG {
-    _svgSource = aSVG;
-    self._svgLayer.svgSource = aSVG;
-}
-- (void)setFillColor:(PSVGColor * const)aColor {
-    _fillColor = aColor;
-    self._svgLayer.fillColor = aColor.CGColor;
-}
-- (void)setStrokeColor:(PSVGColor * const)aColor {
-    _strokeColor = aColor;
-    self._svgLayer.strokeColor = aColor.CGColor;
-}
+- (void)setSvgSource:(NSString * const)aSVG { [_svgLayer setSvgSource:aSVG]; }
+
+- (NSURL *)svgURL                 { return _svgLayer.svgURL; }
+- (void)setSvgURL:(NSURL *)svgURL { _svgLayer.svgURL = svgURL; }
+
+- (PSVGColor *)fillColor { return _svgLayer.fillColor
+                                  ? [PSVGColor colorWithCGColor:_svgLayer.fillColor]
+                                  : nil; }
+- (void)setFillColor:(PSVGColor * const)aColor { _svgLayer.fillColor = aColor.CGColor; }
+
+- (PSVGColor *)strokeColor { return _svgLayer.strokeColor
+                                    ? [PSVGColor colorWithCGColor:_svgLayer.strokeColor]
+                                    : nil; }
+- (void)setStrokeColor:(PSVGColor * const)aColor { _svgLayer.strokeColor = aColor.CGColor; }
 
 - (CGSize)sizeThatFits:(CGSize)aSize
 {
@@ -77,5 +108,4 @@
 {
     return [self sizeThatFits:CGSizeZero];
 }
-
 @end

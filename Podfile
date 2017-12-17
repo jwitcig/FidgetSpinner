@@ -21,8 +21,7 @@ target 'MessagesExtension' do
   pod 'iMessageTools'
   pod 'Game'
 
-  # pod 'Firebase/AdMob'
+  pod 'Firebase/AdMob'
   pod 'Firebase/Core'
-  pod 'Firebase/Database'
 
 end

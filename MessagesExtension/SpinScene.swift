@@ -9,8 +9,6 @@
 import UIKit
 import SpriteKit
 
-import FirebaseDatabase
-
 import JWSwiftTools
 
 struct TimedLocation {

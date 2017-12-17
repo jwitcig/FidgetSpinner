@@ -1,36 +1,35 @@
 PODS:
-  - Cartography (1.0.1)
+  - Cartography (1.1.0)
+  - Firebase/AdMob (4.0.2):
+    - Firebase/Core
+    - Google-Mobile-Ads-SDK (= 7.20.0)
   - Firebase/Core (4.0.2):
     - FirebaseAnalytics (= 4.0.1)
     - FirebaseCore (= 4.0.2)
-  - Firebase/Database (4.0.2):
-    - Firebase/Core
-    - FirebaseDatabase (= 4.0.0)
   - FirebaseAnalytics (4.0.1):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
   - FirebaseCore (4.0.2):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
-  - FirebaseDatabase (4.0.0):
-    - FirebaseAnalytics (~> 4.0)
   - FirebaseInstanceID (2.0.0):
     - FirebaseCore (~> 4.0)
   - Game (1.0.6):
     - JWSwiftTools
+  - Google-Mobile-Ads-SDK (7.20.0)
   - GoogleToolboxForMac/Defines (2.1.1)
   - GoogleToolboxForMac/NSData+zlib (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - iMessageTools (1.0.4):
     - JWSwiftTools
   - JWSwiftTools (1.1.14)
-  - PocketSVG (2.0.0)
-  - SWXMLHash (3.0.3)
+  - PocketSVG (2.2.1)
+  - SWXMLHash (4.1.0)
 
 DEPENDENCIES:
   - Cartography
+  - Firebase/AdMob
   - Firebase/Core
-  - Firebase/Database
   - Game
   - iMessageTools
   - JWSwiftTools
@@ -38,19 +37,19 @@ DEPENDENCIES:
   - SWXMLHash
 
 SPEC CHECKSUMS:
-  Cartography: c1460e99395b824d9d75360b0382faeb0b33dcd7
+  Cartography: '0538ccb4044acbbda2266335fc58cb4228794d90'
   Firebase: c7ad0731eab26d18a3fc547dd048b0f7cd9c63ae
   FirebaseAnalytics: 4d7040fefc3cd8b291cde35f12cf063d7963f15d
   FirebaseCore: 1a8bf6c795ad07d2918278657954ffd2552e9c17
-  FirebaseDatabase: d829b3a8c3e2ac7a16773c5df226966b0805dfc2
   FirebaseInstanceID: 9fbf536668f4d3f0880e7438456dabd1376e294b
   Game: 7d15ab85264fa1791af1d15a66c85a3b2b882dd7
+  Google-Mobile-Ads-SDK: 168312cdc167fa22746d4ea8e839fc4825dd2966
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   iMessageTools: f180b9f986835371d3f1d82b287ab5c9222e3de7
   JWSwiftTools: c07152e274af4fbb834b350fc54ab52369a41f80
-  PocketSVG: 5924c20ec9220fe1717087e56c3d5da27ca76863
-  SWXMLHash: 80d2529d74891bb2f15305a0b9e08f2a4f229ee7
+  PocketSVG: 51c4d5cb9ae7623d4494f439f69747394bad5d67
+  SWXMLHash: 21340633daddd9aaf5c625ae92a26ca6dcdbfe1b
 
-PODFILE CHECKSUM: cd821488e33fdd4734f4d3c21aeb3751269b7d9e
+PODFILE CHECKSUM: 353f1a98f30d868dab82e1c0d21c172e733aa8c5
 
 COCOAPODS: 1.2.1
